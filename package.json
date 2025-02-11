@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fontsource-variable/inter": "^5.1.1",
+    "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
     "cra-template": "1.2.0",
     "daisyui": "^4.12.23",
     "react": "^18.3.1",

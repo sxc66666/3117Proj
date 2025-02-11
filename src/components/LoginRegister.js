@@ -2,6 +2,12 @@ import React, { useState } from "react";
 
 export default function LoginRegister() {
   const [isRegister, setIsRegister] = useState(false);
+  const [password, setPassword] = useState("");
+
+  const toggleForm = () => {
+    setIsRegister(!isRegister);
+    setPassword("");
+  };
 
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -50,6 +56,8 @@ export default function LoginRegister() {
                 type="password"
                 required
                 autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
               />
             </div>
@@ -68,7 +76,7 @@ export default function LoginRegister() {
         <p className="mt-10 text-center text-sm/6 text-gray-500">
           {isRegister ? "Already have an account?" : "Not a member?"} {" "}
           <button
-            onClick={() => setIsRegister(!isRegister)}
+            onClick={toggleForm}
             className="font-semibold text-indigo-600 hover:text-indigo-500"
           >
             {isRegister ? "Sign in" : "Create an account"}
