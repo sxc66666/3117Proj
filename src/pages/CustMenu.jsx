@@ -1,6 +1,8 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
+import FoodList from "../components/FoodList";
+import { foodData } from "../data/mockData";
 
 export default function MainCustomer() {
     const menuLinks = [
@@ -27,7 +29,12 @@ export default function MainCustomer() {
                 ]}
                 >
                 <h1 className="text-2xl font-bold">Welcome to the dashboard of customer!</h1>
-                <p className="mt-4">这里是客户的控制台内容。</p>
+                <FoodList
+                    foods={foodData}
+                    mode="customer"
+                    onChange={(foodId, quantity) => console.log(`菜品 ${foodId} 数量: ${quantity}`)}
+                    />
+
             </CardContainerCust>
         </div>
     );

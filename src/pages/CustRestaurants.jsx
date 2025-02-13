@@ -1,8 +1,13 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
+import RestaurantList from "../components/RestaurantList";
+import { useNavigate } from "react-router-dom";
+import { restaurantData } from "../data/mockData";
 
 export default function MainCustomer() {
+    const navigate = useNavigate(); // 使用 useNavigate 钩子获取 navigate 函数
+
     const menuLinks = [
         { label: 'Home', href: '/cust/restaurants' },
         {
@@ -27,10 +32,11 @@ export default function MainCustomer() {
                 ]}
                 >
                 <h1 className="text-2xl font-bold">Welcome to the dashboard of customer!</h1>
-                <p className="mt-4">这里是客户的控制台内容。</p>
+                <RestaurantList
+                restaurants={restaurantData}
+                onSelect={(restaurant) => navigate(`/cust/restaurants/${restaurant.id}`)}
+                />
             </CardContainerCust>
         </div>
     );
-
-
 }
