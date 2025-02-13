@@ -16,7 +16,7 @@ export default function MainVendor() {
     
     return (
         <div>
-            <Navbar brandName="Food Ordering" links={menuLinks} />
+            <Navbar links={menuLinks} />
             <h1 className="text-center text-3xl font-bold mt-10">Welcome to the dashboard of vendor!</h1>
         </div>
     );

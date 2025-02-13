@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 
-export default function Navbar({ brandName, links }) {
+export default function Navbar({ links }) {
+  const brandName = "Food Ordering";
   return (
     <div style={{ margin: "20px 50px 20px 50px" }}>
     <div className="navbar bg-base-100 rounded-lg shadow-lg p-4">
