@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import FormInput from "../components/FormInput";
 
-export default function LoginRegister() {
+export default function Auth() {
   const [isRegister, setIsRegister] = useState(false);
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
