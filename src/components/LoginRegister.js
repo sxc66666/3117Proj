@@ -3,6 +3,8 @@ import React, { useState } from "react";
 export default function LoginRegister() {
   const [isRegister, setIsRegister] = useState(false);
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState('');
+
 
   const toggleForm = () => {
     setIsRegister(!isRegister);
@@ -24,9 +26,31 @@ export default function LoginRegister() {
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form className="space-y-6">
-          {isRegister && (
+        {isRegister && (
+          <>
             <div>
-              <label className="block text-sm/6 font-medium text-gray-900">Username</label>
+              <label className="block text-sm/6 font-medium text-gray-900">Register as:</label>
+              <div className="mt-2 relative">
+              <select
+                  required
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none"
+                  defaultValue=""
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option value="" disabled>Choose your role</option>
+                  <option value="customer">Customer</option>
+                  <option value="vendor">Vendor</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-300" style={{ fontSize: "1.3rem" }}>
+                  ▾
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm/6 font-medium text-gray-900">
+                {role === "vendor" ? "Restaurant Name" : "Username"}
+              </label>
               <div className="mt-2">
                 <input
                   type="text"
@@ -35,7 +59,8 @@ export default function LoginRegister() {
                 />
               </div>
             </div>
-          )}
+          </>
+        )}
 
           <div>
             <label className="block text-sm/6 font-medium text-gray-900">Email address</label>
