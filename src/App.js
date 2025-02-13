@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import LoginRegister from "./LoginRegister";
+import LoginRegister from "./pages/Auth";
 
 const Home = () => <h1 className="text-center text-3xl font-bold mt-10">Hello World!</h1>;
 

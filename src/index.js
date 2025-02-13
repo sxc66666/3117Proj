@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import App from './components/App';
+import App from './App';
 import './index.css';
 
 // 创建 Redux store（简单占位）
