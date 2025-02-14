@@ -4,25 +4,13 @@ import CardContainerCust from "../components/CardContainerCust";
 import RestaurantList from "../components/RestaurantList";
 import { useNavigate } from "react-router-dom";
 import { restaurantData } from "../data/mockData";
+import { menuLinksCust } from "../config/config";
 
 export default function MainCustomer() {
-    const navigate = useNavigate(); // 使用 useNavigate 钩子获取 navigate 函数
-
-    const menuLinks = [
-        { label: 'Home', href: '/cust/restaurants' },
-        {
-          label: '*Username',
-          children: [
-            { label: 'Orders', href: '/cust/' },
-            { label: 'Account', href: '/cust/' },
-            { label: 'Logout', href: '/cust/' },
-          ],
-        }
-    ];
-    
+    const navigate = useNavigate();
     return (
         <div>
-            <Navbar links={menuLinks} />
+            <Navbar links={menuLinksCust} />
             <CardContainerCust
                 steps={[
                     { label: 'Choose restaurant', completed: true },
