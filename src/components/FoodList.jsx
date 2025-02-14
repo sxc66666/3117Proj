@@ -19,7 +19,7 @@ export default function FoodList({ foods, mode, onChange, onEdit, onDelete }) {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {foods.map((food) => {
         const quantity = quantities[food.id] || 0;
         const isSelected = quantity > 0;
@@ -27,21 +27,21 @@ export default function FoodList({ foods, mode, onChange, onEdit, onDelete }) {
         return (
           <div
             key={food.id}
-            className={`card bg-white shadow-lg transition ${isSelected && mode === 'customer' ? 'border-2 border-indigo-500' : ''}`}
+            className={`card bg-white shadow-lg transition border-2 ${isSelected ? 'border-indigo-500' : 'border-transparent'}`}
           >
             <figure>
               <img src={food.image} alt={food.name} className="h-32 w-full object-cover" />
             </figure>
-            <div className="card-body">
+            <div className="card-body relative">
               <h2 className="card-title">{food.name}</h2>
               <p className="text-sm text-gray-600">{food.description}</p>
-              <p className="text-lg font-bold text-indigo-600">¥{food.price}</p>
+              <p className="text-lg font-bold text-indigo-600">$ {food.price}</p>
 
               {/* 顾客模式：数量选择 */}
               {mode === 'customer' && (
-                <div className="flex items-center gap-2 mt-2">
+                <div className="absolute bottom-5 right-5 flex items-center gap-2 mt-2">
                   <button className="btn btn-sm" onClick={() => handleSubtract(food.id)}>-</button>
-                  <span className="font-bold">{quantity}</span>
+                  <span className="font-bold mx-2">{quantity}</span>
                   <button className="btn btn-sm btn-primary" onClick={() => handleAdd(food.id)}>
                     +
                   </button>

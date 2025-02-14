@@ -28,7 +28,6 @@ export default function MainCustomer() {
                     { label: 'Complete', completed: false },
                 ]}
                 >
-                <h1 className="text-2xl font-bold">Welcome to the dashboard of customer!</h1>
                 <FoodList
                     foods={foodData}
                     mode="customer"

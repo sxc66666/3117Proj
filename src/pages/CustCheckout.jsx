@@ -1,6 +1,8 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
+import OrderSummary from "../components/OrderSummary";
+import { selectedFoodsData } from "../data/mockData";
 
 export default function MainCustomer() {
     const menuLinks = [
@@ -26,8 +28,7 @@ export default function MainCustomer() {
                     { label: 'Complete', completed: false },
                 ]}
                 >
-                <h1 className="text-2xl font-bold">Welcome to the dashboard of customer!</h1>
-                <p className="mt-4">这里是客户的控制台内容。</p>
+                <OrderSummary selectedFoods={selectedFoodsData} />
             </CardContainerCust>
         </div>
     );
