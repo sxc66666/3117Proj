@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 export default function Navbar({ links }) {
   const brandName = "Food Ordering";
   return (
-    <div style={{ margin: "20px 50px 20px 50px" }}>
+    <div style={{ margin: '1.5% 3% 20px 3%' }}>
     <div className="navbar bg-base-100 rounded-lg shadow-lg p-4">
     <div className="flex-1">
         <a className="btn btn-ghost text-xl">{brandName}</a>
@@ -40,7 +40,6 @@ export default function Navbar({ links }) {
 }
 
 Navbar.propTypes = {
-  brandName: PropTypes.string.isRequired, // brand name
   links: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired, // label

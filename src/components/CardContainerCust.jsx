@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 
 export default function CardContainer({ children, steps = [] }) {
   return (
-    <div style={{ margin: '20px 50px 20px 50px' }}>
+    <div style={{ margin: '1.5% 3% 20px 3%' }}>
       <div className="bg-white rounded-lg shadow-lg p-6">
         {steps.length > 0 && (
           <div className="steps-container mb-6">
-            <ul className="steps steps-vertical lg:steps-horizontal">
+            <ul className="steps steps-vertical sm:steps-horizontal lg:steps-horizontal">
               {steps.map((step, index) => (
                 <li
                   key={index}
