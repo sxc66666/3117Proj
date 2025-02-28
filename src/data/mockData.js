@@ -103,4 +103,76 @@ export const restaurantData = [
       image: sampleImage,
     },
   ];
+  export const customerOrders = [
+    {
+      id: "ORD1001",
+      restaurantName: "Pizza Hut",
+      customerName: "Alice Johnson",
+      date: "2024-02-01",
+      total: 25.99,
+      items: [
+        { name: "Margherita Pizza", quantity: 1, price: 15.99 },
+        { name: "Garlic Bread", quantity: 2, price: 5.00 },
+      ],
+    },
+    {
+      id: "ORD1002",
+      restaurantName: "Sushi Express",
+      customerName: "Alice Johnson",
+      date: "2024-02-03",
+      total: 32.50,
+      items: [
+        { name: "Salmon Sushi", quantity: 5, price: 6.50 },
+        { name: "Miso Soup", quantity: 1, price: 3.00 },
+      ],
+    },
+    {
+      id: "ORD1003",
+      restaurantName: "Burger King",
+      customerName: "Alice Johnson",
+      date: "2024-02-05",
+      total: 18.75,
+      items: [
+        { name: "Cheeseburger", quantity: 2, price: 7.50 },
+        { name: "French Fries", quantity: 1, price: 3.75 },
+      ],
+    },
+  ];
+  
+  export const vendorOrders = [
+    {
+      id: "ORD2001",
+      customerName: "Alice Johnson",
+      restaurantName: "Burger King",
+      date: "2024-02-02",
+      total: 45.99,
+      items: [
+        { name: "Pepperoni Pizza", quantity: 2, price: 18.99 },
+        { name: "Coke", quantity: 2, price: 4.00 },
+      ],
+    },
+    {
+      id: "ORD2002",
+      customerName: "Bob Smith",
+      restaurantName: "Burger King",
+      date: "2024-02-04",
+      total: 27.50,
+      items: [
+        { name: "Sashimi Platter", quantity: 1, price: 22.50 },
+        { name: "Green Tea", quantity: 1, price: 5.00 },
+      ],
+    },
+    {
+      id: "ORD2003",
+      customerName: "Charlie Brown",
+      restaurantName: "Burger King",
+      date: "2024-02-06",
+      total: 19.99,
+      items: [
+        { name: "Double Cheeseburger", quantity: 1, price: 10.99 },
+        { name: "Onion Rings", quantity: 1, price: 4.00 },
+        { name: "Milkshake", quantity: 1, price: 5.00 },
+      ],
+    },
+  ];
   

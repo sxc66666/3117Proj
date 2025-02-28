@@ -43,7 +43,7 @@ export default function CustComplete() {
                     <div className="mt-6 flex gap-4">
                         <button 
                             className="btn btn-outline btn-primary px-6 py-2"
-                            onClick={() => navigate('/cust/orders')}
+                            onClick={() => navigate('/orders')}
                         >
                             My Orders
                         </button>
