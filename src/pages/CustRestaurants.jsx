@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { restaurantData } from "../data/mockData";
 import { menuLinksCust } from "../config/config";
 
-export default function MainCustomer() {
+export default function CustRestaurant() {
     const navigate = useNavigate();
     return (
         <div>

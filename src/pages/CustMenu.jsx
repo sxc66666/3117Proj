@@ -5,7 +5,7 @@ import FoodList from "../components/FoodList";
 import { foodData } from "../data/mockData";
 import { menuLinksCust } from "../config/config";
 
-export default function MainCustomer() {    
+export default function CustMenu() {    
     return (
         <div>
             <Navbar links={menuLinksCust} />

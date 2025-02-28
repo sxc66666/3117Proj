@@ -5,7 +5,7 @@ import OrderSummary from "../components/OrderSummary";
 import { selectedFoodsData } from "../data/mockData";
 import { menuLinksCust } from "../config/config";
 
-export default function MainCustomer() {   
+export default function CustCheckout() {   
     return (
         <div>
             <Navbar links={menuLinksCust} />
