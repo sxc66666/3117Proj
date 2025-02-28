@@ -1,10 +1,11 @@
 import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
 import { menuLinksCust } from "../config/config";
-import { useLocation } from "react-router-dom";
 
-export default function CustOrderComplete() {
+export default function CustComplete() {
+    const navigate = useNavigate();
     const location = useLocation();
     const { orderId, restaurantName } = location.state || { orderId: "123456789", restaurantName: "Pizza Hut" };
 
@@ -36,6 +37,22 @@ export default function CustOrderComplete() {
 
                         <p className="mt-3 text-lg font-semibold text-gray-700">Order ID:</p>
                         <p className="text-xl text-gray-900 font-mono">{orderId}</p>
+                    </div>
+
+                    {/* 🛠 操作按钮 */}
+                    <div className="mt-6 flex gap-4">
+                        <button 
+                            className="btn btn-outline btn-primary px-6 py-2"
+                            onClick={() => navigate('/cust/orders')}
+                        >
+                            My Orders
+                        </button>
+                        <button 
+                            className="btn btn-primary px-6 py-2"
+                            onClick={() => navigate('/cust/restaurants')}
+                        >
+                            Home
+                        </button>
                     </div>
                 </div>
             </CardContainerCust>
