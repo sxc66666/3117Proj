@@ -7,6 +7,9 @@ const authRouter = require("./routes/auth");
 
 const app = express();
 
+// 引入数据库初始化脚本
+require('./initDb');  // 假设 initDb.js 放在项目根目录下
+
 // ✅ 允许跨域访问（前端 React 连接 API）
 app.use(cors({
   origin: "http://localhost:3000",
