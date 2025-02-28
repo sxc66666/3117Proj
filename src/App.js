@@ -8,6 +8,7 @@ import MainVendor from "./pages/MainVendor";
 import CustComplete from "./pages/CustComplete";
 import Orders from "./pages/Orders";
 import OrderDetails from "./pages/OrderDetails";
+import VendMenu from "./pages/VendMenu";
 
 const Home = () => <h1 className="text-center text-3xl font-bold mt-10">Jump to the dashboard of customer/vendor later.</h1>;
 
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/cust/complete" element={<CustComplete />} />
 
         <Route path="/vend" element={<MainVendor />} />
+        <Route path="/vend/menu" element={<VendMenu />} />
 
         
         <Route path="/orders" element={<Orders />} />
