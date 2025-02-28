@@ -50,6 +50,41 @@ export const restaurantData = [
       price: 38,
       image: sampleImage,
     },
+    {
+      id: 105,
+      name: 'Spaghetti Bolognese',
+      description: 'Spaghetti with minced beef sauce',
+      price: 58,
+      image: sampleImage,
+    },
+    {
+      id: 106,
+      name: 'Miso Soup',
+      description: 'Soybean paste soup with tofu',
+      price: 18,
+      image: sampleImage,
+    },
+    {
+      id: 107,
+      name: 'Fried Rice',
+      description: 'Stir-fried rice with vegetables',
+      price: 28,
+      image: sampleImage,
+    },
+    {
+      id: 108,
+      name: 'Chicken Nuggets',
+      description: 'Breaded and deep-fried chicken',
+      price: 28,
+      image: sampleImage,
+    },
+    {
+      id: 109,
+      name: 'Caesar Salad',
+      description: 'Romaine lettuce with croutons and dressing',
+      price: 28,
+      image: sampleImage,
+    }
   ];
 
   export const selectedFoodsData = [

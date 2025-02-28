@@ -3,14 +3,24 @@ import { useEffect, useState } from 'react';
 
 export default function FooterCust({ restaurantName, totalPrice, onBack, onCheckout, checkoutText }) {
   const [isMobile, setIsMobile] = useState(false);
-
+  
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 640); // 设定移动端宽度标准 (sm: <640px)
+      setIsMobile(window.innerWidth < 640);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // ✅ 在 Footer 挂载时，为 body 添加 padding-bottom，确保页面不会被遮挡
+  useEffect(() => {
+    const footerHeight = 120; // 适当调整此值以匹配 Footer 的高度
+    document.body.style.paddingBottom = `${footerHeight}px`;
+
+    return () => {
+      document.body.style.paddingBottom = ''; // 组件卸载时恢复默认
+    };
   }, []);
 
   return (
