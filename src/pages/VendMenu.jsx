@@ -5,6 +5,7 @@ import FoodList from "../components/FoodList";
 import EditFoodPopup from "../components/EditFoodPopup";
 import { vendorMenuData } from "../data/mockData";
 import { sampleImage } from "../data/mockData";
+import { menuLinksCust } from '../config/config';
 
 export default function VendorMenu() {
     const [menu, setMenu] = useState(vendorMenuData);
@@ -40,7 +41,7 @@ export default function VendorMenu() {
 
     return (
         <div>
-            <Navbar links={[{ label: "Dashboard", href: "/vendor" }, { label: "Orders", href: "/vendor/orders" }]} />
+            <Navbar links={menuLinksCust} />
             <CardContainer>
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Manage Menu</h1>
