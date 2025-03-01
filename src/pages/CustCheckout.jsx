@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
 import OrderSummary from "../components/OrderSummary";
@@ -9,19 +10,49 @@ import FooterCust from "../components/FooterCust";
 export default function CustCheckout() {   
     const navigate = useNavigate();
     const location = useLocation();
-    const { cart, totalPrice, restaurantName, menuItems } = location.state || {};
+    const { cart, totalPrice, restaurantName, restaurantId, menuItems } = location.state || {};
 
-    // 将 cart 对象转换为数组，方便传递给 OrderSummary 组件
+    // 将 cart 对象转换为数组
     const selectedFoods = Object.entries(cart).map(([foodId, quantity]) => {
-        const foodItem = menuItems.find(item => item.id === Number(foodId)); // 找到对应的商品信息
+        const foodItem = menuItems.find(item => item.id === Number(foodId));
         return {
-            id: foodId,  // 保持 id 的一致性
-            name: foodItem ? foodItem.name : "Unknown",  // 确保 name 存在
-            price: foodItem ? foodItem.price : 0,  // 避免 NaN
+            id: foodId,
+            name: foodItem ? foodItem.name : "Unknown",
+            price: foodItem ? foodItem.price : 0,
             quantity,
-            image: foodItem ? foodItem.image : "https://via.placeholder.com/50",  // 如果没有图片，提供占位图
+            image: foodItem ? foodItem.image : "https://via.placeholder.com/50",
         };
     });
+
+    // ✅ 处理订单提交
+    const handleCheckout = async () => {
+        try {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (!user || !user.id) {
+                alert("User not logged in");
+                return;
+            }
+
+            const orderData = {
+                user_id: user.id,
+                restaurant_id: restaurantId,
+                total_price: totalPrice,
+                items: selectedFoods.map(item => ({
+                    food_id: item.id,
+                    quantity: item.quantity
+                }))
+            };
+
+            const response = await axios.post("http://localhost:9000/api/orders", orderData);
+            console.log("✅ [DEBUG] Order placed:", response.data);
+
+            navigate('/cust/complete', { state: { orderId: response.data.order_id, restaurantName } });
+        } catch (error) {
+            console.error("❌ [ERROR] Failed to submit order:", error);
+            alert("Failed to place order. Please try again.");
+        }
+    };
+
     return (
         <div>
             <Navbar links={menuLinksCust} />
@@ -39,7 +70,7 @@ export default function CustCheckout() {
                 restaurantName={restaurantName}
                 totalPrice={totalPrice}
                 onBack={() => navigate(-1)}
-                onCheckout={() => navigate('/cust/complete')}
+                onCheckout={handleCheckout}
                 checkoutText="Complete"
             />
         </div>

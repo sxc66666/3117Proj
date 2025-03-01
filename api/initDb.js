@@ -62,9 +62,38 @@ const createTableQuery = `
   (117, 1, 'Vegetable Pizza', 'A pizza topped with an assortment of fresh vegetables', 68, 'https://example.com/sampleImageVegPizza.jpg'),
   (118, 1, 'Peking Duck', 'Crispy duck served with pancakes, hoisin sauce, and spring onions', 198, 'https://example.com/sampleImagePekingDuck.jpg');
 
-  
 
-  `;
+  ALTER TABLE restaurants ADD COLUMN owner_id INT REFERENCES users(id);
+  
+  UPDATE restaurants 
+  SET owner_id = (SELECT id FROM users WHERE login_id = 'vendor1') 
+  WHERE name = 'Pizza Hut';
+
+
+  UPDATE restaurants 
+  SET owner_id = (SELECT id FROM users WHERE login_id = 'vendor2') 
+  WHERE name = 'Sushi Express';
+
+
+  UPDATE restaurants 
+  SET owner_id = (SELECT id FROM users WHERE login_id = 'vendor3') 
+  WHERE name = 'Burger King';
+  CREATE TABLE orders (
+      id SERIAL PRIMARY KEY,
+      restaurant_id INT REFERENCES restaurants(id) ON DELETE CASCADE,
+      user_id INT REFERENCES users(id) ON DELETE SET NULL,  -- 允许订单保留，即使用户被删除
+      total_price DECIMAL(10,2) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE order_items (
+      id SERIAL PRIMARY KEY,
+      order_id INT REFERENCES orders(id) ON DELETE CASCADE,
+      food_id INT REFERENCES foods(id) ON DELETE CASCADE,
+      quantity INT NOT NULL
+  );
+
+`;
 
 // 异步执行创建表格
 async function createTable() {
