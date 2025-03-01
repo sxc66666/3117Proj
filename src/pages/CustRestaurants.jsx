@@ -19,7 +19,6 @@ export default function CustRestaurant() {
                     { label: 'Complete', completed: false },
                 ]}
                 >
-                <h1 className="text-2xl font-bold">Welcome to the dashboard of customer!</h1>
                 <RestaurantList
                 restaurants={restaurantData}
                 onSelect={(restaurant) => navigate(`/cust/restaurants/${restaurant.id}`)}
