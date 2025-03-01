@@ -9,7 +9,7 @@ import FooterCust from "../components/FooterCust";
 export default function CustCheckout() {   
     const navigate = useNavigate();
     const location = useLocation();
-    const { cart, totalPrice, restaurantName, menuItems } = location.state || {};  // 获取传递的购物车数据
+    const { cart, totalPrice, restaurantName, menuItems } = location.state || {};
 
     // 将 cart 对象转换为数组，方便传递给 OrderSummary 组件
     const selectedFoods = Object.entries(cart).map(([foodId, quantity]) => {
