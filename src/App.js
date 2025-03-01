@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/Auth" element={<Auth />} />
         <Route path="/cust/restaurants" element={<CustRestaurants />} />
-        <Route path="/cust/restaurants/*" element={<CustMenu />} />
+        <Route path="/cust/restaurants/:restaurantId" element={<CustMenu />} />
         <Route path="/cust/checkout" element={<CustCheckout />} />
 
         {/* 登出页面 */}

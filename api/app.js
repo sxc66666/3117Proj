@@ -38,4 +38,31 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.message || "Internal Server Error" });
 });
 
+// API 路由：获取所有餐厅
+app.get('/api/restaurants', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM public.restaurants');
+    console.log("Fetched restaurants:", result.rows); // 打印查询结果到控制台
+    res.json(result.rows);    // 返回查询结果
+  } catch (err) {
+    console.error('Database error:', err);  // 打印错误信息
+    res.status(500).send('Error fetching data');
+  }
+});
+
+// API 路由：获取指定餐厅的食品数据
+app.get('/api/foods/:restaurantId', async (req, res) => {
+    const { restaurantId } = req.params;  // 获取餐厅 ID
+  
+    try {
+      // 根据餐厅 ID 查询食品数据
+      const result = await pool.query('SELECT * FROM public.foods WHERE restaurant_id = $1', [restaurantId]);
+      console.log("Fetched foods for restaurant:", result.rows);  // 打印查询结果到控制台
+      res.json(result.rows);  // 返回食品数据
+    } catch (err) {
+      console.error('Database error:', err);  // 打印错误信息
+      res.status(500).send('Error fetching food data');
+    }
+  });
+
 module.exports = app;
