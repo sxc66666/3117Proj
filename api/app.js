@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
 const authRouter = require("./routes/auth");
-
+const vendorRouter = require("./routes/vendorRoutes");  // 🆕 添加商家 API
 const app = express();
 
 // 引入数据库初始化脚本
@@ -12,7 +12,7 @@ require('./initDb');  // 假设 initDb.js 放在项目根目录下
 
 // ✅ 允许跨域访问（前端 React 连接 API）
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "http://localhost:3001"],  // ✅ 允许多个前端地址
   credentials: true
 }));
 
@@ -26,6 +26,7 @@ app.use(logger("dev"));
 
 // ✅ 绑定 API 路由
 app.use('/auth', authRouter);
+app.use('/api/vendor', vendorRouter);  // 🆕 绑定商家 API 路由
 
 // ✅ 处理 404 错误
 app.use((req, res) => {

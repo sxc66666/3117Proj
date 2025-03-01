@@ -62,7 +62,9 @@ const createTableQuery = `
   (117, 1, 'Vegetable Pizza', 'A pizza topped with an assortment of fresh vegetables', 68, 'https://example.com/sampleImageVegPizza.jpg'),
   (118, 1, 'Peking Duck', 'Crispy duck served with pancakes, hoisin sauce, and spring onions', 198, 'https://example.com/sampleImagePekingDuck.jpg');
 
-`;
+  
+
+  `;
 
 // 异步执行创建表格
 async function createTable() {
