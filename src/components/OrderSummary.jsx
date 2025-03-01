@@ -12,16 +12,16 @@ export default function OrderSummary({ selectedFoods }) {
           </tr>
         </thead>
         <tbody>
-          {selectedFoods.map((item) => (
+        {selectedFoods.map((item) => (
             <tr key={item.id}>
-              <td className="flex items-center gap-3">
-                <img src={item.image} alt={item.name} className="w-12 h-12 rounded" />
-                <span>{item.name}</span>
-              </td>
-              <td>{item.quantity}</td>
-              <td>$ {item.quantity * item.price}</td>
+                <td className="flex items-center gap-3">
+                    <img src={item.image} alt={item.name} className="w-12 h-12 rounded" />
+                    <span>{item.name}</span>
+                </td>
+                <td>{item.quantity}</td>
+                <td>${item.price ? (item.quantity * item.price).toFixed(2) : "N/A"}</td>
             </tr>
-          ))}
+        ))}
         </tbody>
       </table>
     </div>

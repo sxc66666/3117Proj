@@ -11,7 +11,7 @@ const router = express.Router();
 const pool = new Pool({
   user: "postgres",
   host: "localhost",
-  database: "test_auth",
+  database: "food_ordering_system",
   password: "12345", // 修改为你的 PostgreSQL 密码
   port: 5432,
 });
@@ -68,7 +68,7 @@ router.post("/register", upload.single("profile_image"), async (req, res) => {
       "INSERT INTO users (login_id, password_hash, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6)",
       [login_id, hashedPassword, nick_name, email, type, profile_image]
     );
-
+    
     res.json({ message: "User registered successfully" });
   } catch (error) {
     console.error("❌ Registration Error:", error);
