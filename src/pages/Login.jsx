@@ -102,15 +102,36 @@ export default function Auth() {
 
       setMessage(response.data.message);
 
+      // if (!isRegister) {
+      //   // 登录成功后，设置用户信息
+      //   setUser(response.data.user);
+      //   document.cookie = `user_id=${response.data.user.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
+      //   localStorage.setItem("user", JSON.stringify(response.data.user));
+      //   navigate("/logout");
+      // } else {
+      //   toggleForm(); // 注册成功后切换到登录模式
+      // }
+
       if (!isRegister) {
-        // 登录成功后，设置用户信息
         setUser(response.data.user);
         document.cookie = `user_id=${response.data.user.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
         localStorage.setItem("user", JSON.stringify(response.data.user));
-        navigate("/logout");
+      
+        // 直接从 response.data.user 获取 type 和 login_id
+        const userType = response.data.user.type;
+        const loginId = response.data.user.login_id;
+      
+        if (userType === "consumer") {
+          navigate(`/CustMenu/${loginId}`);
+        } else if (userType === "restaurant") {
+          navigate(`/VendMenu/${loginId}`);
+        } else {
+          navigate("/");
+        }
       } else {
-        toggleForm(); // 注册成功后切换到登录模式
+        toggleForm();
       }
+      
     } catch (error) {
       setMessage(error.response?.data?.message || "Error occurred");
     }
