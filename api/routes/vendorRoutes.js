@@ -85,5 +85,29 @@ router.delete("/menu/:id", async (req, res) => {
         res.status(500).json({ error: "Database error" });
     }
 });
+router.get("/getRestaurantId", async (req, res) => {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+        return res.status(400).json({ error: "Missing user_id" });
+    }
+
+    try {
+        console.log("📡 [DEBUG] Fetching restaurant_id for user_id:", user_id);
+        
+        const result = await pool.query("SELECT id FROM restaurants WHERE owner_id = $1", [user_id]);
+
+        if (result.rows.length === 0) {
+            console.log("❌ [ERROR] No restaurant found for user_id:", user_id);
+            return res.status(404).json({ error: "No restaurant found for this user" });
+        }
+
+        console.log("✅ [DEBUG] Found restaurant_id:", result.rows[0].id);
+        res.json({ restaurant_id: result.rows[0].id });
+    } catch (error) {
+        console.error("❌ [ERROR] Failed to fetch restaurant_id:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 module.exports = router;
