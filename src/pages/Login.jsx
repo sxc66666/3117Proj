@@ -45,7 +45,6 @@ export default function Auth() {
   // 表单提交
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🛠️ [DEBUG] Form Submitted. isRegister:", isRegister);
 
     // 登录请求需要验证 loginId 和 password 是否为空
     if (!loginId || !password) {
@@ -56,8 +55,6 @@ export default function Auth() {
     const url = isRegister
       ? "http://localhost:9000/auth/register"
       : "http://localhost:9000/auth/login";
-      console.log("📡 [DEBUG] API Request URL:", url);
-
 
     const data = {
       login_id: loginId,
@@ -66,18 +63,15 @@ export default function Auth() {
       email: email,
       type: type,
     };
-    console.log("📦 [DEBUG] Sending Data:", data);
 
-    // // 仅在注册时检查头像文件
-    // if (isRegister && !profileImage) {
-    //   setMessage("Profile image is required for registration.");
-    //   return;
-    // }
+    // 仅在注册时检查头像文件
+    if (isRegister && !profileImage) {
+      setMessage("Profile image is required for registration.");
+      return;
+    }
 
     try {
       let response;
-
-      console.log("isRegister", isRegister);
 
       if (isRegister) {
         // 注册请求使用 FormData 处理文件上传
@@ -87,10 +81,8 @@ export default function Auth() {
         formData.append("nick_name", nickName);
         formData.append("email", email);
         formData.append("type", type);
-        console.log("ready to append img");
         if (profileImage) {
           formData.append("profile_image", profileImage);
-          console.log("profileIMG:", profileImage);
         }
 
         // 注册请求
@@ -107,26 +99,43 @@ export default function Auth() {
           },
         });
       }
-      console.log("✅ [DEBUG] Server Response:", response.data);
 
       setMessage(response.data.message);
 
-      if (!isRegister) {
-        // 登录成功后，设置用户信息
-        console.log("🔑 [DEBUG] Login Successful. User:", response.data.user);
+      // if (!isRegister) {
+      //   // 登录成功后，设置用户信息
+      //   setUser(response.data.user);
+      //   document.cookie = `user_id=${response.data.user.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
+      //   localStorage.setItem("user", JSON.stringify(response.data.user));
+      //   navigate("/logout");
+      // } else {
+      //   toggleForm(); // 注册成功后切换到登录模式
+      // }
 
+      if (!isRegister) {
         setUser(response.data.user);
+      
+        // 设置 Cookie 以存储 user_id
         document.cookie = `user_id=${response.data.user.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
         localStorage.setItem("user", JSON.stringify(response.data.user));
-        navigate("/logout");
+      
+        // 获取用户类型和 ID
+        const userType = response.data.user.type;
+        const restaurantId = response.data.user.id; // 假设用户ID是 restaurantId
+      
+        if (userType === "consumer") {
+          navigate(`/cust/restaurants`);  // 进入消费者页面
+        } else if (userType === "restaurant") {
+          navigate(`/vend/menu`); // 进入商家菜单页面
+        } else {
+          navigate("/"); // 兜底跳转
+        }
       } else {
-        console.log("🎉 [DEBUG] Registration Successful. Switching to Login mode.");
-
-        toggleForm(); // 注册成功后切换到登录模式
+        toggleForm();
       }
+      
+      
     } catch (error) {
-      console.error("❌ [ERROR] API Request Failed:", error.response);
-
       setMessage(error.response?.data?.message || "Error occurred");
     }
   };
