@@ -24,12 +24,32 @@ export default function Auth() {
       /(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/,
       "$1"
     );
-
+  
     if (storedUser || cookieUserId) {
-      // 如果已经登录，跳转到 logout 页面
-      navigate("/logout");
+      try {
+        // 解析存储的用户信息（如果存的是 JSON 格式）
+        const user = storedUser ? JSON.parse(storedUser) : null;
+        
+        if (!user || !user.type) {
+          navigate("/"); // 兜底跳转，防止数据异常
+          return;
+        }
+  
+        // 根据用户类型跳转到不同的页面
+        if (user.type === "consumer") {
+          navigate(`/cust/restaurants`);  // 进入消费者页面
+        } else if (user.type === "restaurant") {
+          navigate(`/vend/menu`); // 进入商家菜单页面
+        } else {
+          navigate("/"); // 兜底跳转
+        }
+      } catch (error) {
+        console.error("解析用户信息失败:", error);
+        navigate("/"); // 解析错误时兜底跳转
+      }
     }
   }, [navigate]);
+  
 
   // 切换注册/登录状态
   const toggleForm = () => {
