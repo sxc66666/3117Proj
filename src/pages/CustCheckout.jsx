@@ -10,7 +10,16 @@ import FooterCust from "../components/FooterCust";
 export default function CustCheckout() {   
     const navigate = useNavigate();
     const location = useLocation();
+    console.log(location.state);
     const { cart, totalPrice, restaurantName, restaurantId, menuItems } = location.state || {};
+
+    // Ensure restaurantId is defined
+    if (!restaurantId) {
+        console.error("❌ [ERROR] restaurantId is undefined");
+        alert("Restaurant ID is missing. Please go back and select a restaurant.");
+        navigate(-1);
+        return null;
+    }
 
     // 将 cart 对象转换为数组
     const selectedFoods = Object.entries(cart).map(([foodId, quantity]) => {
@@ -33,26 +42,36 @@ export default function CustCheckout() {
                 return;
             }
 
+            // Log user_id to verify it is correctly retrieved
+            console.log('User ID:', user.id);
+
+            // Log restaurantId to verify it is correctly passed
+            console.log('Restaurant ID:', restaurantId);
+    
             const orderData = {
                 user_id: user.id,
-                restaurant_id: restaurantId,
+                restaurant_id: Number(restaurantId),  // Ensure this is included in the payload as a number
                 total_price: totalPrice,
                 items: selectedFoods.map(item => ({
-                    food_id: item.id,
+                    food_id: Number(item.id),  // Make sure food_id is a number
                     quantity: item.quantity
                 }))
             };
+    
+            // Log the request payload to verify it includes the restaurantId
+            console.log('Request payload:', JSON.stringify(orderData, null, 2));
+    
+            const response = await axios.post("http://localhost:9000/api/orders", orderData); 
 
-            const response = await axios.post("http://localhost:5000/api/orders", orderData);
             console.log("✅ [DEBUG] Order placed:", response.data);
-
-            navigate('/cust/complete', { state: { orderId: response.data.order_id, restaurantName } });
+    
+            navigate('/cust/complete', { state: { orderId: response.data.order_id, restaurantName: response.data.restaurant_name } });
         } catch (error) {
             console.error("❌ [ERROR] Failed to submit order:", error);
             alert("Failed to place order. Please try again.");
         }
     };
-
+    
     return (
         <div>
             <Navbar links={menuLinksCust} />
