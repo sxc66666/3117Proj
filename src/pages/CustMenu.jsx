@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
@@ -9,8 +9,9 @@ import FooterCust from "../components/FooterCust";
 
 export default function CustMenu() {    
     const navigate = useNavigate();
+    const location = useLocation();
     const { restaurantId } = useParams();  // 获取餐厅 ID
-    const restaurantName = "Pizza Hut";  // 假设当前餐厅
+    const { restaurantName } = location.state || { restaurantName: "Pizza Hut" };  // 假设当前餐厅
 
     const [foodData, setFoodData] = useState([]);
     const [cart, setCart] = useState({});
