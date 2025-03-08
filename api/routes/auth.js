@@ -66,6 +66,16 @@ router.post("/register", upload.single("profile_image"), async (req, res) => {
       "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6)",
       [login_id, password, nick_name, email, type, profile_image]
     );
+
+    if (type === "restaurant") {
+      console.log("✅ Registering restaurant user:", login_id);
+      const result = await pool.query(
+        "insert into restaurants (name, image, id) values ($1, $2, (select id from users where login_id = $3)) RETURNING *",
+        [nick_name, profile_image, login_id]
+      );
+      console.log("Inserted row:", result.rows);
+      
+  }
     
     res.json({ message: "User registered successfully" });
   } catch (error) {
@@ -103,7 +113,7 @@ router.post("/login", async (req, res) => {
     console.log("✅ Login successful for user:", user.login_id);
 
     // 获取 `restaurant_id`
-    const restaurantResult = await pool.query("SELECT id FROM restaurants WHERE owner_id = $1", [user.id]);
+    const restaurantResult = await pool.query("SELECT id FROM restaurants WHERE id = $1", [user.id]);
     const restaurant_id = restaurantResult.rows.length > 0 ? restaurantResult.rows[0].id : null;
 
     res.json({

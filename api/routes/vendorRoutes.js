@@ -13,7 +13,7 @@ router.get("/menu", async (req, res) => {
 
         console.log("📡 [DEBUG] Fetching menu for restaurant_id:", restaurant_id);
         const result = await pool.query(
-            "SELECT * FROM foods WHERE restaurant_id = $1",
+            "SELECT * FROM foods WHERE restaurant_id = $1 and is_active = TRUE",
             [restaurant_id]
         );
 
@@ -51,16 +51,15 @@ router.post("/menu", async (req, res) => {
 });
 
 
-// ✅ 更新菜品
+// ✅ 更新菜品(有安全问题，任何客户端都可以改别人的menu)
 router.put("/menu/:id", async (req, res) => {
     try {
-        const { name, description, price, image } = req.body;
-        const vendor_id = req.user?.id || 1;
-        const food_id = req.params.id;
+        const { name, description, price, image, id, restaurant_id } = req.body;
+        console.log("📡 [DEBUG] Updating food:", req.body);
 
         const result = await pool.query(
             "UPDATE public.foods SET name=$1, description=$2, price=$3, image=$4 WHERE id=$5 AND restaurant_id=$6 RETURNING *",
-            [name, description, price, image, food_id, vendor_id]
+            [name, description, price, image, id, restaurant_id]
         );
 
         res.json(result.rows[0]);
@@ -72,19 +71,33 @@ router.put("/menu/:id", async (req, res) => {
 // ✅ 删除菜品
 router.delete("/menu/:id", async (req, res) => {
     try {
-        const vendor_id = req.user?.id || 1;
-        const food_id = req.params.id;
+        const { id } = req.params;  // 从 URL 参数获取 id
+        const { restaurantId } = req.query;  // 获取查询参数
 
+        console.log("📡 [DEBUG] Del food:", { id, restaurantId});
+
+        if (!id || !restaurantId) {
+            return res.status(400).json({ error: "Missing required parameters" });
+        }
+
+        console.log("📡 [DEBUG] Deleting food item:", id);
+        console.log("📡 [DEBUG] Deleting food item:", restaurantId);
         const result = await pool.query(
-            "DELETE FROM public.foods WHERE id=$1 AND restaurant_id=$2 RETURNING *",
-            [food_id, vendor_id]
+            "UPDATE public.foods SET is_active=FALSE WHERE id=$1 AND restaurant_id=$2 RETURNING *",
+            [id, restaurantId]
         );
 
-        res.json({ message: "Food item deleted" });
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Food item not found or already deleted" });
+        }
+
+        res.json(result.rows[0]);
     } catch (error) {
+        console.error("Database error:", error);
         res.status(500).json({ error: "Database error" });
     }
 });
+
 router.get("/getRestaurantId", async (req, res) => {
     const { user_id } = req.query;
 

@@ -43,17 +43,16 @@ const createTableQuery = `
   ('consumer1', 'test1234', 'consumer1@mail.com', 'Alice', 'consumer'),
   ('consumer2', 'test1234', 'comsumer2@mail.com', 'Bob', 'consumer');
 
-  -- 创建餐厅表（直接关联 owner_id）
-  CREATE TABLE restaurants (
-    id SERIAL PRIMARY KEY,
+  -- 创建餐厅表
+CREATE TABLE restaurants (
+    id INT NOT NULL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    image VARCHAR(255),
-    owner_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL -- 直接绑定商家用户
-  );
+    image VARCHAR(255)
+);
 
   -- 预先插入餐厅数据，并正确绑定 owner_id
-  INSERT INTO restaurants (name, description, image, owner_id) VALUES
+  INSERT INTO restaurants (name, description, image, id) VALUES
   ('Pizza Hut', 'Delicious pizza with various toppings', 'https://example.com/sampleImage1.jpg',
    (SELECT id FROM users WHERE login_id = 'vendor1')),
   ('Sushi Express', 'Fresh sushi and sashimi', 'https://example.com/sampleImage2.jpg',
@@ -68,7 +67,8 @@ const createTableQuery = `
     name VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL CHECK (price > 0), -- 价格不能小于 0
-    image VARCHAR(255)
+    image VARCHAR(255),
+    is_active BOOLEAN DEFAULT TRUE
   );
 
   -- 预先插入食品数据
