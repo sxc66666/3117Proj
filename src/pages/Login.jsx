@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import useAuthStore from '../store/useAuthSore';  // 引入 zustand store
+import useAuthStore from '../components/useAuthSore';  // 引入 zustand store
 import { useNavigate } from 'react-router-dom'; // 导入 useNavigate
 //import 'bootstrap/dist/css/bootstrap.min.css'; // 引入 Bootstrap 样式
 import FormInput from "../components/FormInput";
@@ -75,8 +75,8 @@ export default function Auth() {
     }
 
     const url = isRegister
-      ? "http://localhost:9000/auth/register"
-      : "http://localhost:9000/auth/login";
+      ? "http://localhost:5000/auth/register"
+      : "http://localhost:5000/auth/login";
 
     const data = {
       login_id: loginId,

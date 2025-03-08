@@ -43,7 +43,7 @@ export default function CustCheckout() {
                 }))
             };
 
-            const response = await axios.post("http://localhost:9000/api/orders", orderData);
+            const response = await axios.post("http://localhost:5000/api/orders", orderData);
             console.log("✅ [DEBUG] Order placed:", response.data);
 
             navigate('/cust/complete', { state: { orderId: response.data.order_id, restaurantName } });
