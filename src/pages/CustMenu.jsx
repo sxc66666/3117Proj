@@ -60,6 +60,18 @@ export default function CustMenu() {
         return <div>{error}</div>;
     }
 
+    const handleOrder = () => {
+        navigate('/cust/checkout', {
+            state: {
+                cart,
+                totalPrice,
+                restaurantName,
+                restaurantId,  // Ensure this is included in the state
+                menuItems: foodData
+            }
+        });
+    };
+
     return (
         <div>
             <Navbar links={menuLinksCust} />
@@ -81,10 +93,7 @@ export default function CustMenu() {
                 restaurantName={restaurantName}
                 totalPrice={totalPrice}
                 onBack={() => navigate(-1)}
-                onCheckout={() => navigate('/cust/checkout', { 
-                    state: { cart, totalPrice, restaurantName, menuItems: foodData }  // 传递完整的 foodData
-                })}
-                
+                onCheckout={handleOrder}
                 checkoutText="Checkout"
             />
         </div>

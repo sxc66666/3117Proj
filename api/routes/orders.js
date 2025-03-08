@@ -1,25 +1,36 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("../db");
+const pool = require("../db/db");
 
 // ✅ 顾客下单
+// 顾客下单
 router.post("/", async (req, res) => {
     try {
         const { user_id, restaurant_id, total_price, items } = req.body;
+        console.log("Received order data:", req.body);  // 打印接收到的数据
 
-        if (!user_id || !restaurant_id || !total_price || !items.length) {
+        // 数据验证
+        if (!user_id || !restaurant_id || !total_price || !items || items.length === 0) {
             return res.status(400).json({ error: "Invalid order data" });
         }
 
-        // ✅ 创建订单
+        // 验证 user_id 是否存在
+        const userResult = await pool.query("SELECT id FROM users WHERE id = $1", [user_id]);
+        if (userResult.rows.length === 0) {
+            console.error("❌ [ERROR] Invalid user_id:", user_id);
+            return res.status(400).json({ error: "Invalid user_id" });
+        }
+
+        // 创建订单
         const orderResult = await pool.query(
             "INSERT INTO orders (restaurant_id, user_id, total_price) VALUES ($1, $2, $3) RETURNING id",
             [restaurant_id, user_id, total_price]
         );
 
         const orderId = orderResult.rows[0].id;
+        console.log("Created order with ID:", orderId);
 
-        // ✅ 插入订单项
+        // 插入订单项
         const orderItemsPromises = items.map(item =>
             pool.query(
                 "INSERT INTO order_items (order_id, food_id, quantity) VALUES ($1, $2, $3)",
@@ -28,9 +39,15 @@ router.post("/", async (req, res) => {
         );
         await Promise.all(orderItemsPromises);
 
-        res.json({ order_id: orderId });
+        // 获取商家名称
+        const restaurantResult = await pool.query("SELECT name FROM restaurants WHERE id = $1", [restaurant_id]);
+        const restaurantName = restaurantResult.rows[0].name;
+
+        // 返回成功信息及订单 ID
+        res.json({ order_id: orderId, restaurant_name: restaurantName});
     } catch (error) {
         console.error("❌ [ERROR] Failed to place order:", error);
+        console.error("❌ [ERROR] Error details:", error.message, error.stack);
         res.status(500).json({ error: "Database error", details: error.message });
     }
 });
@@ -52,6 +69,7 @@ router.get("/vendor/:restaurant_id", async (req, res) => {
         res.json(orders.rows);
     } catch (error) {
         console.error("❌ [ERROR] Failed to fetch vendor orders:", error);
+        console.error("❌ [ERROR] Error details:", error.message, error.stack);
         res.status(500).json({ error: "Database error", details: error.message });
     }
 });
@@ -73,6 +91,7 @@ router.get("/customer/:user_id", async (req, res) => {
         res.json(orders.rows);
     } catch (error) {
         console.error("❌ [ERROR] Failed to fetch customer orders:", error);
+        console.error("❌ [ERROR] Error details:", error.message, error.stack);
         res.status(500).json({ error: "Database error", details: error.message });
     }
 });
