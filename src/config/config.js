@@ -4,7 +4,6 @@ export const menuLinksCust = [
       label: '*Username',
       children: [
         { label: 'Orders', href: '/orders/' },
-        { label: 'Account', href: '/cust/' },
         { label: 'Logout', href: '/logout' },
       ],
     }
