@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import useAuthStore from '../store/useAuthSore';  // 引入 zustand store
 import { useNavigate } from 'react-router-dom'; // 导入 useNavigate
+import 'bootstrap/dist/css/bootstrap.min.css'; // 引入 Bootstrap 样式
 
 export default function Auth() {
   const [isRegister, setIsRegister] = useState(false);  // 切换注册/登录模式
@@ -122,15 +123,6 @@ export default function Auth() {
 
       setMessage(response.data.message);
 
-      // if (!isRegister) {
-      //   // 登录成功后，设置用户信息
-      //   setUser(response.data.user);
-      //   document.cookie = `user_id=${response.data.user.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
-      //   localStorage.setItem("user", JSON.stringify(response.data.user));
-      //   navigate("/logout");
-      // } else {
-      //   toggleForm(); // 注册成功后切换到登录模式
-      // }
 
       if (!isRegister) {
         setUser(response.data.user);
@@ -169,74 +161,101 @@ export default function Auth() {
   };
 
   return (
-    <div>
-      <h2>{isRegister ? "Register" : "Login"}</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Login ID"
-          value={loginId}
-          onChange={(e) => setLoginId(e.target.value)}
-          required
-        />
-        {isRegister && (
-          <>
+    <div className="container mt-5 d-flex justify-content-center">
+      <div className="card shadow p-4" style={{ width: "400px" }}>
+        <h2 className="text-center mb-4">{isRegister ? "Register" : "Login"}</h2>
+        
+        {message && <div className="alert alert-info text-center">{message}</div>}
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group mb-3">
             <input
               type="text"
-              placeholder="Nick Name"
-              value={nickName}
-              onChange={(e) => setNickName(e.target.value)}
+              className="form-control"
+              placeholder="Login ID"
+              value={loginId}
+              onChange={(e) => setLoginId(e.target.value)}
               required
             />
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              required
-            >
-              <option value="consumer">Consumer</option>
-              <option value="restaurant">Restaurant</option>
-            </select>
+          </div>
 
-            {/* 文件上传框 */}
+          {isRegister && (
+            <>
+              <div className="form-group mb-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Nick Name"
+                  value={nickName}
+                  onChange={(e) => setNickName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group mb-3">
+                <input
+                  type="email"
+                  className="form-control"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group mb-3">
+                <select
+                  className="form-control"
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                  required
+                >
+                  <option value="consumer">Consumer</option>
+                  <option value="restaurant">Restaurant</option>
+                </select>
+              </div>
+              <div className="form-group mb-3">
+                <input
+                  type="file"
+                  className="form-control"
+                  onChange={(e) => setProfileImage(e.target.files[0])}
+                />
+              </div>
+            </>
+          )}
+
+          <div className="form-group mb-3">
             <input
-              type="file"
-              onChange={(e) => setProfileImage(e.target.files[0])} // 设置选择的文件
+              type="password"
+              className="form-control"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
-          </>
+          </div>
+
+          <button type="submit" className="btn btn-primary w-100">
+            {isRegister ? "Register" : "Login"}
+          </button>
+        </form>
+
+        <div className="text-center mt-3">
+          {isRegister ? (
+            <button className="btn btn-link" onClick={toggleForm}>
+              Already have an account? Login
+            </button>
+          ) : (
+            <button className="btn btn-link" onClick={toggleForm}>
+              Don't have an account? Register
+            </button>
+          )}
+        </div>
+
+        {user && !isRegister && (
+          <button className="btn btn-danger w-100 mt-2" onClick={handleLogout}>
+            Logout
+          </button>
         )}
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">{isRegister ? "Register" : "Login"}</button>
-      </form>
-
-      {message && <p>{message}</p>}
-
-      {isRegister ? (
-        <button onClick={toggleForm}>
-          Already have an account? Login
-        </button>
-      ) : (
-        <button onClick={toggleForm}>
-          Don't have an account? Register
-        </button>
-      )}
-
-      {/* 如果已经登录，显示登出按钮 */}
-      {user && !isRegister && (
-        <button onClick={handleLogout}>Logout</button>
-      )}
+      </div>
     </div>
   );
 }
