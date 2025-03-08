@@ -45,7 +45,7 @@ export default function Auth() {
       if (!response.ok) throw new Error(data.message || "Something went wrong");
 
       alert(isRegister ? "Registration successful!" : "Login successful!");
-      
+
       if (!isRegister) {
         localStorage.setItem("user", JSON.stringify(data.user)); // 存储用户信息
         window.location.href = "/dashboard"; // 登录成功后跳转
@@ -60,18 +60,22 @@ export default function Auth() {
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          alt="Your Company"
-          src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-          className="mx-auto h-10 w-auto"
-        />
         <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
           {isRegister ? "Create an account" : "Sign in to your account"}
         </h2>
       </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="mt-9 sm:mx-auto sm:w-full sm:max-w-sm">
         <form className="space-y-6" onSubmit={handleSubmit}>
+          <FormInput
+            label="Login ID"
+            type="text"
+            name="login_id"
+            value={formData.login_id}
+            onChange={handleChange}
+            required
+          />
+
           {isRegister && (
             <>
               <div>
@@ -97,26 +101,28 @@ export default function Auth() {
                 onChange={handleChange}
                 required
               />
+
+              <FormInput
+                label="Email address"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required={isRegister}
+              />
+
+              <div>
+                <label className="block text-sm font-medium text-gray-900">Profile Picture:</label>
+                <div className="mt-1 flex items-center">
+                  <label className="relative cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Upload File
+                    <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  </label>
+                  <span className="ml-3 text-gray-500 text-sm">JPG, PNG up to 2MB</span>
+                </div>
+              </div>
             </>
           )}
-
-          <FormInput
-            label="Login ID"
-            type="text"
-            name="login_id"
-            value={formData.login_id}
-            onChange={handleChange}
-            required
-          />
-
-          <FormInput
-            label="Email address"
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required={isRegister}
-          />
 
           <FormInput
             label="Password"
