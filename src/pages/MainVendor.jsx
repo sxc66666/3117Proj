@@ -43,7 +43,7 @@ export default function VendorMenu() {
 
         try {
             console.log("📡 [DEBUG] Sending request to add new food...", newFood);
-            const response = await axios.post("http://localhost:9000/api/vendor/menu", newFood);
+            const response = await axios.post("http://localhost:5000/api/vendor/menu", newFood);
             console.log("✅ [DEBUG] Added food:", response.data);
             setMenu([...menu, response.data]);  // ✅ 更新菜单
             setNewFood({ name: "", description: "", price: "", image: "" }); // ✅ 清空表单
