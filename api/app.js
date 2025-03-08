@@ -9,6 +9,9 @@ const vendorRouter = require("./routes/vendorRoutes");
 
 const app = express();
 
+// 引入数据库初始化脚本
+require('./initDb');  // 假设 initDb.js 放在项目根目录下
+
 // ✅ 允许跨域访问
 app.use(cors({
   origin: ["http://localhost:3000", "http://localhost:3001"],  // ✅ 允许多个前端地址
