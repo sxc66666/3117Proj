@@ -18,7 +18,8 @@ export default function Orders() {
           return;
         }
 
-        const response = await axios.get(`http://localhost:9000/api/orders/${user.id}`);
+        const response = await axios.get(`http://localhost:5000/api/orders/${user.id}`);
+
         console.log("✅ [DEBUG] Fetched orders:", response.data);
         setOrders(response.data);
       } catch (error) {

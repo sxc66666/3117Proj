@@ -5,6 +5,9 @@ import CustRestaurants from "./pages/CustRestaurants";
 import CustMenu from "./pages/CustMenu";
 import CustCheckout from "./pages/CustCheckout";
 import MainVendor from "./pages/MainVendor";
+import CustAccount from "./pages/CustAccount";
+import VendAccount from "./pages/VendAccount";
+
 
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";  // 引入 Logout 页面
@@ -28,6 +31,9 @@ const App = () => {
         <Route path="/cust/complete" element={<CustComplete />} />
         <Route path="/vend/menu" element={<VendMenu />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/CustAccount" element={<CustAccount />} />
+        <Route path="/VendAccount" element={<VendAccount />} />
+
       </Routes>
     </div>
   );

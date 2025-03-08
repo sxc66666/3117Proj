@@ -37,7 +37,7 @@ export default function CustMenu() {
         console.log("Restaurant ID received:", restaurantId);  // 输出 restaurantId，确保它是正确的
 
         if (restaurantId) {
-            axios.get(`http://localhost:9000/api/foods/${restaurantId}`)
+            axios.get(`http://localhost:5000/api/foods/${restaurantId}`)
                 .then((response) => {
                     console.log("Fetched foods:", response.data);  // 确认食品数据
                     setFoodData(response.data);  // 设置食品数据

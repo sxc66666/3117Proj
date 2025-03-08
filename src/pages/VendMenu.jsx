@@ -32,7 +32,7 @@ export default function VendorMenu() {
         const fetchMenu = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:9000/api/vendor/menu?restaurant_id=${restaurantId}`);
+                const response = await axios.get(`http://localhost:5000/api/vendor/menu?restaurant_id=${restaurantId}`);
                 console.log("📡 [DEBUG] Fetched menu:", response.data);
                 setMenu(response.data);
             } catch (err) {
