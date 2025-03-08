@@ -79,7 +79,8 @@ router.get("/customer/:user_id", async (req, res) => {
     try {
         const { user_id } = req.params;
 
-        const orders = await pool.query(
+        // 获取订单列表
+        const ordersResult = await pool.query(
             `SELECT o.id, o.total_price, o.created_at, r.name AS restaurant_name
              FROM orders o
              JOIN restaurants r ON o.restaurant_id = r.id
@@ -88,12 +89,27 @@ router.get("/customer/:user_id", async (req, res) => {
             [user_id]
         );
 
-        res.json(orders.rows);
+        const orders = ordersResult.rows;
+
+        // 获取每个订单的 items
+        for (let order of orders) {
+            const itemsResult = await pool.query(
+                `SELECT f.name, oi.quantity, f.price
+                 FROM order_items oi
+                 JOIN foods f ON oi.food_id = f.id
+                 WHERE oi.order_id = $1`,
+                [order.id]
+            );
+
+            order.items = itemsResult.rows;
+        }
+
+        res.json(orders);
     } catch (error) {
         console.error("❌ [ERROR] Failed to fetch customer orders:", error);
-        console.error("❌ [ERROR] Error details:", error.message, error.stack);
         res.status(500).json({ error: "Database error", details: error.message });
     }
 });
+
 
 module.exports = router;
