@@ -52,34 +52,18 @@ router.post("/", async (req, res) => {
     }
 });
 
-// ✅ 获取商家的订单
-router.get("/vendor/:restaurant_id", async (req, res) => {
-    try {
-        const { restaurant_id } = req.params;
-
-        const orders = await pool.query(
-            `SELECT o.id, o.total_price, o.created_at, u.nick_name AS customer_name
-             FROM orders o
-             JOIN users u ON o.user_id = u.id
-             WHERE o.restaurant_id = $1
-             ORDER BY o.created_at DESC`,
-            [restaurant_id]
-        );
-
-        res.json(orders.rows);
-    } catch (error) {
-        console.error("❌ [ERROR] Failed to fetch vendor orders:", error);
-        console.error("❌ [ERROR] Error details:", error.message, error.stack);
-        res.status(500).json({ error: "Database error", details: error.message });
+router.get("/:user_id", async (req, res) => {
+    // 获取用户 ID
+    const { user_id } = req.params;
+    // 在数据库中查询该用户type，是“consumer”还是“restaurant”
+    const user = await pool.query("SELECT type FROM users WHERE id = $1", [user_id]);
+    // 如果用户不存在
+    if (user.rows.length === 0) {
+        return res.status(404).json({ error: "User not found" });
     }
-});
-
-// ✅ 获取顾客的订单
-router.get("/customer/:user_id", async (req, res) => {
-    try {
-        const { user_id } = req.params;
-
-        // 获取订单列表
+    // 如果用户是顾客
+    if (user.rows[0].type === "consumer") {
+        // 查询顾客的订单
         const ordersResult = await pool.query(
             `SELECT o.id, o.total_price, o.created_at, r.name AS restaurant_name
              FROM orders o
@@ -88,9 +72,7 @@ router.get("/customer/:user_id", async (req, res) => {
              ORDER BY o.created_at DESC`,
             [user_id]
         );
-
         const orders = ordersResult.rows;
-
         // 获取每个订单的 items
         for (let order of orders) {
             const itemsResult = await pool.query(
@@ -100,14 +82,33 @@ router.get("/customer/:user_id", async (req, res) => {
                  WHERE oi.order_id = $1`,
                 [order.id]
             );
-
             order.items = itemsResult.rows;
         }
-
         res.json(orders);
-    } catch (error) {
-        console.error("❌ [ERROR] Failed to fetch customer orders:", error);
-        res.status(500).json({ error: "Database error", details: error.message });
+    } else if (user.rows[0].type === "restaurant") {
+        // 如果用户是商家
+        // 查询商家的订单
+        const ordersResult = await pool.query(
+            `SELECT o.id, o.total_price, o.created_at, u.nick_name AS customer_name
+             FROM orders o
+             JOIN users u ON o.user_id = u.id
+             WHERE o.restaurant_id = $1
+             ORDER BY o.created_at DESC`,
+            [user_id]
+        );
+        const orders = ordersResult.rows;
+        // 获取每个订单的 items
+        for (let order of orders) {
+            const itemsResult = await pool.query(
+                `SELECT f.name, oi.quantity, f.price
+                 FROM order_items oi
+                 JOIN foods f ON oi.food_id = f.id
+                 WHERE oi.order_id = $1`,
+                [order.id]
+            );
+            order.items = itemsResult.rows;
+        }
+        res.json(orders);
     }
 });
 
