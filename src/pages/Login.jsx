@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import useAuthStore from '../store/useAuthSore';  // 引入 zustand store
 import { useNavigate } from 'react-router-dom'; // 导入 useNavigate
-import 'bootstrap/dist/css/bootstrap.min.css'; // 引入 Bootstrap 样式
+//import 'bootstrap/dist/css/bootstrap.min.css'; // 引入 Bootstrap 样式
+import FormInput from "../components/FormInput";
 
 export default function Auth() {
   const [isRegister, setIsRegister] = useState(false);  // 切换注册/登录模式
@@ -160,50 +161,121 @@ export default function Auth() {
     navigate("/"); // 重定向到首页或登录页
   };
 
-  return (
-    <div className="container mt-5 d-flex justify-content-center">
-      <div className="card shadow p-4" style={{ width: "400px" }}>
-        <h2 className="text-center mb-4">{isRegister ? "Register" : "Login"}</h2>
+  // return (
+  //   <div className="container mt-5 d-flex justify-content-center">
+  //     <div className="card shadow p-4" style={{ width: "400px" }}>
+  //       <h2 className="text-center mb-4">{isRegister ? "Register" : "Login"}</h2>
         
-        {message && <div className="alert alert-info text-center">{message}</div>}
+  //       {message && <div className="alert alert-info text-center">{message}</div>}
 
+  //       <form onSubmit={handleSubmit}>
+  //         <div className="form-group mb-3">
+  //           <input
+  //             type="text"
+  //             className="form-control"
+  //             placeholder="Login ID"
+  //             value={loginId}
+  //             onChange={(e) => setLoginId(e.target.value)}
+  //             required
+  //           />
+  //         </div>
+
+  //         {isRegister && (
+  //           <>
+  //             <div className="form-group mb-3">
+  //               <input
+  //                 type="text"
+  //                 className="form-control"
+  //                 placeholder="Nick Name"
+  //                 value={nickName}
+  //                 onChange={(e) => setNickName(e.target.value)}
+  //                 required
+  //               />
+  //             </div>
+  //             <div className="form-group mb-3">
+  //               <input
+  //                 type="email"
+  //                 className="form-control"
+  //                 placeholder="Email Address"
+  //                 value={email}
+  //                 onChange={(e) => setEmail(e.target.value)}
+  //                 required
+  //               />
+  //             </div>
+  //             <div className="form-group mb-3">
+  //               <select
+  //                 className="form-control"
+  //                 value={type}
+  //                 onChange={(e) => setType(e.target.value)}
+  //                 required
+  //               >
+  //                 <option value="consumer">Consumer</option>
+  //                 <option value="restaurant">Restaurant</option>
+  //               </select>
+  //             </div>
+  //             <div className="form-group mb-3">
+  //               <input
+  //                 type="file"
+  //                 className="form-control"
+  //                 onChange={(e) => setProfileImage(e.target.files[0])}
+  //               />
+  //             </div>
+  //           </>
+  //         )}
+
+  //         <div className="form-group mb-3">
+  //           <input
+  //             type="password"
+  //             className="form-control"
+  //             placeholder="Password"
+  //             value={password}
+  //             onChange={(e) => setPassword(e.target.value)}
+  //             required
+  //           />
+  //         </div>
+
+  //         <button type="submit" className="btn btn-primary w-100">
+  //           {isRegister ? "Register" : "Login"}
+  //         </button>
+  //       </form>
+
+  //       <div className="text-center mt-3">
+  //         {isRegister ? (
+  //           <button className="btn btn-link" onClick={toggleForm}>
+  //             Already have an account? Login
+  //           </button>
+  //         ) : (
+  //           <button className="btn btn-link" onClick={toggleForm}>
+  //             Don't have an account? Register
+  //           </button>
+  //         )}
+  //       </div>
+
+  //       {user && !isRegister && (
+  //         <button className="btn btn-danger w-100 mt-2" onClick={handleLogout}>
+  //           Logout
+  //         </button>
+  //       )}
+  //     </div>
+  //   </div>
+  // );
+  return (
+    <div className="flex justify-center mt-10">
+      <div className="w-96 bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-center text-xl font-semibold mb-4">
+          {isRegister ? "Register" : "Login"}
+        </h2>
+        {message && <div className="text-center text-red-500 mb-2">{message}</div>}
         <form onSubmit={handleSubmit}>
-          <div className="form-group mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Login ID"
-              value={loginId}
-              onChange={(e) => setLoginId(e.target.value)}
-              required
-            />
-          </div>
-
+          <FormInput label="Login ID" type="text" value={loginId} onChange={(e) => setLoginId(e.target.value)} required />
           {isRegister && (
             <>
-              <div className="form-group mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Nick Name"
-                  value={nickName}
-                  onChange={(e) => setNickName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="Email Address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group mb-3">
+              <FormInput label="Nick Name" type="text" value={nickName} onChange={(e) => setNickName(e.target.value)} required />
+              <FormInput label="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <div className="mt-2">
+                <label className="block text-sm font-medium text-gray-900">User Type</label>
                 <select
-                  className="form-control"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                   required
@@ -212,49 +284,20 @@ export default function Auth() {
                   <option value="restaurant">Restaurant</option>
                 </select>
               </div>
-              <div className="form-group mb-3">
-                <input
-                  type="file"
-                  className="form-control"
-                  onChange={(e) => setProfileImage(e.target.files[0])}
-                />
+              <div className="mt-2">
+                <label className="block text-sm font-medium text-gray-900">Profile Image</label>
+                <input type="file" onChange={(e) => setProfileImage(e.target.files[0])} className="w-full p-2 border border-gray-300 rounded-md" />
               </div>
             </>
           )}
-
-          <div className="form-group mb-3">
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button type="submit" className="btn btn-primary w-100">
+          <FormInput label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <button type="submit" className="w-full mt-4 bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-700">
             {isRegister ? "Register" : "Login"}
           </button>
         </form>
-
-        <div className="text-center mt-3">
-          {isRegister ? (
-            <button className="btn btn-link" onClick={toggleForm}>
-              Already have an account? Login
-            </button>
-          ) : (
-            <button className="btn btn-link" onClick={toggleForm}>
-              Don't have an account? Register
-            </button>
-          )}
-        </div>
-
-        {user && !isRegister && (
-          <button className="btn btn-danger w-100 mt-2" onClick={handleLogout}>
-            Logout
-          </button>
-        )}
+        <button className="w-full mt-4 text-indigo-600" onClick={toggleForm}>
+          {isRegister ? "Already have an account? Login" : "Don't have an account? Register"}
+        </button>
       </div>
     </div>
   );
