@@ -57,16 +57,14 @@ router.post("/register", upload.single("profile_image"), async (req, res) => {
       return res.status(400).json({ message: "Login ID already exists" });
     }
 
-    // 加密密码
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    
     // 获取上传的文件路径，如果文件不存在，使用 null 或者默认头像路径
     const profile_image = req.file ? req.file.path : null;  // 如果没有文件上传，则为 null
 
     // 插入用户信息到数据库
     await pool.query(
-      "INSERT INTO users (login_id, password_hash, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6)",
-      [login_id, hashedPassword, nick_name, email, type, profile_image]
+      "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6)",
+      [login_id, password, nick_name, email, type, profile_image]
     );
     
     res.json({ message: "User registered successfully" });

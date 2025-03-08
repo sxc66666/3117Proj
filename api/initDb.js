@@ -38,6 +38,11 @@ const createTableQuery = `
   ('vendor2', 'test1234', 'vendor2@mail.com', 'SushiOwner', 'restaurant'),
   ('vendor3', 'test1234', 'vendor3@mail.com', 'BurgerOwner', 'restaurant');
 
+
+  INSERT INTO users (login_id, password, email, nick_name, type) VALUES
+  ('consumer1', 'test1234', 'consumer1@mail.com', 'Alice', 'consumer'),
+  ('consumer2', 'test1234', 'comsumer2@mail.com', 'Bob', 'consumer');
+
   -- 创建餐厅表（直接关联 owner_id）
   CREATE TABLE restaurants (
     id SERIAL PRIMARY KEY,
