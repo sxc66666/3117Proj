@@ -19,7 +19,7 @@ export default function VendorMenu() {
         const fetchMenu = async () => {
             try {
                 console.log("📡 [DEBUG] Fetching menu from backend...");
-                const response = await axios.get("http://localhost:9000/api/vendor/menu");
+                const response = await axios.get("http://localhost:5000/api/vendor/menu");
                 console.log("✅ [DEBUG] API response:", response.data);
                 setMenu(response.data);
             } catch (err) {
