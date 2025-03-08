@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const path = require("path");
 
 const pool = require("./db/db");  // ✅ 确保数据库连接
 const authRouter = require("./routes/auth");
@@ -13,7 +14,6 @@ const app = express();
 // 引入数据库初始化脚本
 require('./initDb');  // 假设 initDb.js 放在项目根目录下
 
-
 // ✅ 先启用 `cookieParser`，以确保 `credentials` 正常工作
 app.use(cookieParser());
 
@@ -23,16 +23,22 @@ app.use(cors({
   credentials: true  // ✅ 允许携带 Cookie
 }));
 
-
+// ✅ 解析请求体
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(logger("dev"));
 
+// ✅ 设置 `uploads` 目录为静态文件目录
+const uploadsPath = path.join(__dirname, 'routes', 'uploads');
+console.log(`📂 Serving static files from: ${uploadsPath}`);
+app.use('/uploads', express.static(uploadsPath));
+
 // ✅ 绑定 API 路由
 app.use('/auth', authRouter);
 app.use('/api/vendor', vendorRouter);
 app.use('/api/logout', logoutRouter);  // ✅ 使用 logout 路由
+app.use('/api', require('./routes/CustAccountBack'));  
 
 // ✅ 获取所有餐厅（确保这个放在 `/auth` 和 `/vendor` 之后）
 app.get('/api/restaurants', async (req, res) => {

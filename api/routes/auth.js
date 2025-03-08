@@ -126,6 +126,7 @@ router.post("/login", async (req, res) => {
         type: user.type,
         profile_image: user.profile_image,
         restaurant_id: restaurant_id,  // ✅ 返回 `restaurant_id`
+        description: null,  // 返回餐厅的 `description`，默认为空字符串
       },
     });
   } catch (error) {
