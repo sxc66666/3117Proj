@@ -57,16 +57,14 @@ router.post("/register", upload.single("profile_image"), async (req, res) => {
       return res.status(400).json({ message: "Login ID already exists" });
     }
 
-    // 加密密码
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    
     // 获取上传的文件路径，如果文件不存在，使用 null 或者默认头像路径
     const profile_image = req.file ? req.file.path : null;  // 如果没有文件上传，则为 null
 
     // 插入用户信息到数据库
     await pool.query(
-      "INSERT INTO users (login_id, password_hash, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6)",
-      [login_id, hashedPassword, nick_name, email, type, profile_image]
+      "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6)",
+      [login_id, password, nick_name, email, type, profile_image]
     );
     
     res.json({ message: "User registered successfully" });
@@ -80,40 +78,34 @@ router.post("/register", upload.single("profile_image"), async (req, res) => {
 router.post("/login", async (req, res) => {
   const { login_id, password } = req.body;
 
-  // 打印请求体数据，检查前端传来的数据
-  console.log('Received login request:', req.body);
+  console.log("Received login request:", req.body);
 
   try {
-    // 查询数据库，获取用户信息
     console.log("Querying database for login_id:", login_id);
     const result = await pool.query("SELECT * FROM users WHERE login_id = $1", [login_id]);
 
-    // 打印数据库查询结果
     console.log("Database query result:", result.rows);
 
-    // 如果用户不存在，返回错误
     if (result.rows.length === 0) {
       return res.status(400).json({ message: "User not found" });
     }
 
     const user = result.rows[0];
 
-    // 打印用户信息，确保查询结果正确
     console.log("User found in database:", user);
 
-    // 使用 bcrypt.compare 比较密码
-    console.log("Comparing password:", password);
-    console.log("User's password hash:", user.password_hash);
-
-    const isValid = await bcrypt.compare(password, user.password_hash); // 这里验证密码
-
-    if (!isValid) {
-      console.log("Password is invalid");
+    // ✅ 直接比对明文密码（仅限测试环境）
+    if (password !== user.password) {
+      console.log("❌ Password is invalid");
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    // 登录成功，返回用户信息
-    console.log("Login successful for user:", user.login_id);
+    console.log("✅ Login successful for user:", user.login_id);
+
+    // 获取 `restaurant_id`
+    const restaurantResult = await pool.query("SELECT id FROM restaurants WHERE owner_id = $1", [user.id]);
+    const restaurant_id = restaurantResult.rows.length > 0 ? restaurantResult.rows[0].id : null;
+
     res.json({
       message: "Login successful",
       user: {
@@ -123,6 +115,7 @@ router.post("/login", async (req, res) => {
         email: user.email,
         type: user.type,
         profile_image: user.profile_image,
+        restaurant_id: restaurant_id,  // ✅ 返回 `restaurant_id`
       },
     });
   } catch (error) {
@@ -130,6 +123,7 @@ router.post("/login", async (req, res) => {
     return res.status(500).json({ message: "Error logging in", error: error.message });
   }
 });
+
 
 
 module.exports = router;

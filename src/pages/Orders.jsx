@@ -1,13 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import OrderList from '../components/OrderList';
-import { customerOrders } from '../data/mockData';
 import Navbar from '../components/Navbar';
 import { menuLinksCust } from '../config/config';
 import CardContainer from '../components/CardContainer';
 import OrderDetailsPopup from '../components/OrderDetailsPopup';
 
 export default function Orders() {
+  const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user.id) {
+          return;
+        }
+
+        const response = await axios.get(`http://localhost:9000/api/orders/customer/${user.id}`);
+        console.log("✅ [DEBUG] Fetched orders:", response.data);
+        setOrders(response.data);
+      } catch (error) {
+        console.error("❌ [ERROR] Failed to fetch orders:", error);
+      }
+    };
+    fetchOrders();
+  }, []);
 
   return (
     <div>
@@ -15,16 +34,15 @@ export default function Orders() {
       <CardContainer>
         <h1 className="text-2xl font-bold">My Orders</h1>
         <OrderList
-          orders={customerOrders}
+          orders={orders}
           role="cust"
-          onClick={(order) => setSelectedOrder(order)} // ✅ 传递点击事件
+          onClick={(order) => setSelectedOrder(order)}
         />
-        {/* 🆕 渲染 Popup */}
         {selectedOrder && (
           <OrderDetailsPopup
             order={selectedOrder}
             role="cust"
-            onClose={() => setSelectedOrder(null)} // ✅ 关闭 Popup
+            onClose={() => setSelectedOrder(null)}
           />
         )}
       </CardContainer>
