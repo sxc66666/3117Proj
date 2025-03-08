@@ -6,11 +6,12 @@ const logger = require("morgan");
 const pool = require("./db/db");  // ✅ 确保数据库连接
 const authRouter = require("./routes/auth");
 const vendorRouter = require("./routes/vendorRoutes");
+const orderRoutes = require("./routes/orders");  // 确保正确引入并设置路由
 
 const app = express();
 
 // 引入数据库初始化脚本
-require('./initDb');  // 假设 initDb.js 放在项目根目录下
+require('./initDb');  // initDb.js 放在项目根目录下
 
 // ✅ 允许跨域访问
 app.use(cors({
@@ -26,6 +27,7 @@ app.use(logger("dev"));
 // ✅ 绑定 API 路由
 app.use('/auth', authRouter);
 app.use('/api/vendor', vendorRouter);
+app.use("/api/orders", orderRoutes); 
 
 // ✅ 获取所有餐厅（确保这个放在 `/auth` 和 `/vendor` 之后）
 app.get('/api/restaurants', async (req, res) => {

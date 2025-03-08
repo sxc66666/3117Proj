@@ -13,8 +13,10 @@ export default function OrderList({ orders, role, onClick }) {
             {role === 'cust' ? order.restaurantName : order.customerName}
           </h3>
           <p className="text-sm text-gray-500">Order ID: {order.id}</p>
-          <p className="text-sm text-gray-500">Date: {order.date}</p>
-          <p className="text-lg font-bold text-gray-800">Total: ${order.total.toFixed(2)}</p>
+          <p className="text-sm text-gray-500">Date: {new Date(order.created_at).toLocaleDateString()}</p>
+          <p className="text-lg font-bold text-gray-800">
+            Total: ${Number(order.total_price)  ? Number(order.total_price).toFixed(2) : 'N/A'}
+          </p>
         </div>
       ))}
     </div>
