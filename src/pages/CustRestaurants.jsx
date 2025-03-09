@@ -44,7 +44,7 @@ export default function CustRestaurant() {
         {/* 使用从后端获取的餐厅数据 */}
         <RestaurantList
           restaurants={restaurants}
-          onSelect={(restaurant) => navigate(`/cust/restaurants/${restaurant.id}`)}
+          onSelect={(restaurant) => navigate(`/cust/restaurants/${restaurant.id}`, { state: { restaurantName: restaurant.name } })}
         />
       </CardContainerCust>
     </div>

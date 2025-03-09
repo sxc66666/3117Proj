@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
@@ -9,8 +9,9 @@ import FooterCust from "../components/FooterCust";
 
 export default function CustMenu() {    
     const navigate = useNavigate();
+    const location = useLocation();
     const { restaurantId } = useParams();  // 获取餐厅 ID
-    const restaurantName = "Pizza Hut";  // 假设当前餐厅
+    const { restaurantName } = location.state || { restaurantName: "Pizza Hut" };  // 假设当前餐厅
 
     const [foodData, setFoodData] = useState([]);
     const [cart, setCart] = useState({});
@@ -60,6 +61,18 @@ export default function CustMenu() {
         return <div>{error}</div>;
     }
 
+    const handleOrder = () => {
+        navigate('/cust/checkout', {
+            state: {
+                cart,
+                totalPrice,
+                restaurantName,
+                restaurantId,  // Ensure this is included in the state
+                menuItems: foodData
+            }
+        });
+    };
+
     return (
         <div>
             <Navbar links={menuLinksCust} />
@@ -81,10 +94,7 @@ export default function CustMenu() {
                 restaurantName={restaurantName}
                 totalPrice={totalPrice}
                 onBack={() => navigate(-1)}
-                onCheckout={() => navigate('/cust/checkout', { 
-                    state: { cart, totalPrice, restaurantName, menuItems: foodData }  // 传递完整的 foodData
-                })}
-                
+                onCheckout={handleOrder}
                 checkoutText="Checkout"
             />
         </div>
