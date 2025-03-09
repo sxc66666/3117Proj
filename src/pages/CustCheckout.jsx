@@ -61,7 +61,7 @@ export default function CustCheckout() {
             // Log the request payload to verify it includes the restaurantId
             console.log('Request payload:', JSON.stringify(orderData, null, 2));
     
-            const response = await axios.post("http://localhost:9000/api/orders", orderData); 
+            const response = await axios.post("http://localhost:5000/api/orders", orderData); 
 
             console.log("✅ [DEBUG] Order placed:", response.data);
     
