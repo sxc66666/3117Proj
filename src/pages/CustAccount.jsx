@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CustAccount = () => {
   const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({ password: "" });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -34,7 +36,7 @@ const CustAccount = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/update-user", {
+      const response = await fetch("http://localhost:5000/api/cust/update-Custuser", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedUser),
@@ -61,6 +63,7 @@ const CustAccount = () => {
 
   return (
     <div>
+      <button onClick={() => navigate("/")}>返回</button>
       {editMode ? (
         <div>
           <label>

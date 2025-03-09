@@ -38,7 +38,9 @@ app.use('/uploads', express.static(uploadsPath));
 app.use('/auth', authRouter);
 app.use('/api/vendor', vendorRouter);
 app.use('/api/logout', logoutRouter);  // ✅ 使用 logout 路由
-app.use('/api', require('./routes/CustAccountBack'));  
+app.use('/api', require('./routes/CustAccountBack')); //cust
+app.use('/api', require('./routes/VendAccountBack'));
+
 
 // ✅ 获取所有餐厅（确保这个放在 `/auth` 和 `/vendor` 之后）
 app.get('/api/restaurants', async (req, res) => {
