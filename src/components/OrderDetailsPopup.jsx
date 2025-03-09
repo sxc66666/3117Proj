@@ -4,6 +4,10 @@ export default function OrderDetailsPopup({ order, role, onClose }) {
     return null; // 避免 `undefined` 时报错
   }
 
+  console.log('Order details:', order);
+
+  role = order.restaurant_name ? 'cust' : 'vend';
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-96 relative">
@@ -12,7 +16,7 @@ export default function OrderDetailsPopup({ order, role, onClose }) {
         </button>
         <h2 className="text-2xl font-bold text-gray-800">
           {role === 'cust' ? "Order from" : "Order by"}: 
-          <span className="text-indigo-600"> {role === 'cust' ? order.restaurantName : order.customerName}</span>
+          <span className="text-indigo-600"> {role === 'cust' ? order.restaurant_name : order.customer_name}</span>
         </h2>
 
         <p className="text-gray-600 mt-2">Order ID: {order.id || "N/A"}</p>
