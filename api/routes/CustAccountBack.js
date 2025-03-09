@@ -3,7 +3,8 @@ const pool = require("../db/db"); // 连接 PostgreSQL 的 db.js
 const router = express.Router();
 
 // 更新用户信息 API
-router.put("/update-user", async (req, res) => {
+router.put("/cust/update-Custuser", async (req, res) => {
+  console.log("📥 收到客户账户更新请求:", req.body);
   const { id, email, nick_name, type, profile_image, password } = req.body;
 
   // 检查是否提供了用户 ID

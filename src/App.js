@@ -34,6 +34,8 @@ const App = () => {
         <Route path="/CustAccount" element={<CustAccount />} />
         <Route path="/VendAccount" element={<VendAccount />} />
 
+        
+
       </Routes>
     </div>
   );

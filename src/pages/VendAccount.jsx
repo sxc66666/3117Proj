@@ -1,106 +1,130 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const VendAccount = ({ userData }) => {
-  // state hooks
-  const [userInfo, setUserInfo] = useState(null)
-  const [isEditing, setIsEditing] = useState(false);
+const VendAccount = () => {
+  const [user, setUser] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({ password: "", description: "" });
+  const navigate = useNavigate();
 
-  // 初始化用户信息
   useEffect(() => {
-    if (userData) {
-      setUserInfo({
-        email: userData.email,
-        nick_name: userData.nick_name,
-        profile_image: userData.profile_image,
-        description: userData.description, // 假设你可以从数据库获取description
-      });
-    }
-  }, [userData]);
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
 
-  const handleInputChange = (e) => {
+      // 处理 profile_image 路径
+      if (parsedUser.profile_image && parsedUser.profile_image.startsWith("D:\\")) {
+        const filename = parsedUser.profile_image.split("\\").pop(); // 获取文件名
+        parsedUser.profile_image = `http://localhost:5000/uploads/${filename}`;
+      }
+
+      setUser(parsedUser);
+      setFormData({ ...parsedUser, password: "", description: parsedUser.description || "" }); // 加载 description
+    }
+  }, []);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserInfo((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUserInfo((prevData) => ({
-        ...prevData,
-        profile_image: URL.createObjectURL(file),
-      }));
+  const handleSave = async () => {
+    const updatedUser = { ...user, ...formData };
+
+    if (!formData.password) {
+      delete updatedUser.password; // 不更新密码时，不发送 password 字段
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/Vend/update-Venduser", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedUser),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert("User information and description updated successfully!");
+        setUser(result.user); // 更新本地状态
+        localStorage.setItem("user", JSON.stringify(result.user)); // 更新 localStorage
+        setEditMode(false);
+      } else {
+        alert("Update failed, please try again!");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("Network error, update failed!");
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // 这里需要把修改的内容发送到后端进行更新
-    console.log('Updated User Data:', userInfo);
-    // 发送到后端的 API 代码应该在这里
-  };
+  if (!user) {
+    return <p className="text-center text-gray-500">Loading...</p>;
+  }
 
   return (
-    <div className="vend-account-container">
-      <h1>Vendor Account</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
-          {isEditing ? (
-            <input
-              type="email"
-              name="email"
-              value={userInfo.email}
-              onChange={handleInputChange}
-            />
-          ) : (
-            <p>{userInfo.email}</p>
-          )}
-        </div>
-        <div>
-          <label>Nickname:</label>
-          {isEditing ? (
+    <div className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-lg">
+      <button onClick={() => navigate("/")} className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-md">Back</button>
+      {editMode ? (
+        <div className="space-y-4">
+          <label className="block">
+            Nick Name:
             <input
               type="text"
               name="nick_name"
-              value={userInfo.nick_name}
-              onChange={handleInputChange}
+              value={formData.nick_name}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
-          ) : (
-            <p>{userInfo.nick_name}</p>
-          )}
-        </div>
-        <div>
-          <label>Profile Image:</label>
-          {isEditing ? (
-            <input type="file" onChange={handleFileChange} />
-          ) : (
-            <img
-              src={userInfo.profile_image}
-              alt="Profile"
-              style={{ width: '100px', height: '100px' }}
+          </label>
+          <label className="block">
+            Email:
+            <input
+              type="text"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
-          )}
-        </div>
-        <div>
-          <label>Description:</label>
-          {isEditing && (
+          </label>
+          <label className="block">
+            Password:
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter new password"
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </label>
+          <label className="block">
+            Description:
             <textarea
               name="description"
-              value={userInfo.description}
-              onChange={handleInputChange}
+              value={formData.description}
+              onChange={handleChange}
+              rows="4"
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
-          )}
+          </label>
+          <button onClick={handleSave} className="px-4 py-2 bg-green-500 text-white rounded-md">Save</button>
         </div>
-        <div>
-          <button type="button" onClick={() => setIsEditing(!isEditing)}>
-            {isEditing ? 'Cancel' : 'Edit'}
-          </button>
-          {isEditing && <button type="submit">Save</button>}
+      ) : (
+        <div className="space-y-4">
+          <p className="text-gray-700">Login ID: {user.login_id}</p>
+          <p className="text-gray-700">Nick Name: {user.nick_name}</p>
+          <p className="text-gray-700">Email: {user.email}</p>
+          <p className="text-gray-700">Type: {user.type}</p>
+          <img
+            src={user.profile_image || "/default-avatar.png"}
+            alt="Profile"
+            onError={(e) => { e.target.src = "/default-avatar.png"; }}
+            className="w-36 h-36 rounded-full mx-auto"
+          />
+          <p className="text-gray-600">{user.description}</p>
+          <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-yellow-500 text-white rounded-md">Edit</button>
         </div>
-      </form>
+      )}
     </div>
   );
 };

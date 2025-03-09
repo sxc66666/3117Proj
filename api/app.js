@@ -42,7 +42,9 @@ app.use('/auth', authRouter);
 app.use('/api/vendor', vendorRouter);
 
 app.use('/api/logout', logoutRouter);  // ✅ 使用 logout 路由
-app.use('/api', require('./routes/CustAccountBack'));  
+app.use('/api', require('./routes/CustAccountBack')); //cust
+app.use('/api', require('./routes/VendAccountBack'));
+
 
 app.use("/api/orders", orderRoutes); 
 
