@@ -44,47 +44,49 @@ const VendAccount = () => {
 
       if (response.ok) {
         const result = await response.json();
-        alert("用户信息和描述更新成功！");
+        alert("User information and description updated successfully!");
         setUser(result.user); // 更新本地状态
         localStorage.setItem("user", JSON.stringify(result.user)); // 更新 localStorage
         setEditMode(false);
       } else {
-        alert("更新失败，请重试！");
+        alert("Update failed, please try again!");
       }
     } catch (error) {
       console.error("Error updating user:", error);
-      alert("网络错误，更新失败！");
+      alert("Network error, update failed!");
     }
   };
 
   if (!user) {
-    return <p>加载中...</p>;
+    return <p className="text-center text-gray-500">Loading...</p>;
   }
 
   return (
-    <div>
-      <button onClick={() => navigate("/")}>返回</button>
+    <div className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-lg">
+      <button onClick={() => navigate("/")} className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-md">Back</button>
       {editMode ? (
-        <div>
-          <label>
+        <div className="space-y-4">
+          <label className="block">
             Nick Name:
             <input
               type="text"
               name="nick_name"
               value={formData.nick_name}
               onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
           </label>
-          <label>
+          <label className="block">
             Email:
             <input
               type="text"
               name="email"
               value={formData.email}
               onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
           </label>
-          <label>
+          <label className="block">
             Password:
             <input
               type="password"
@@ -92,37 +94,35 @@ const VendAccount = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter new password"
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
           </label>
-          <label>
+          <label className="block">
             Description:
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows="4"
-              cols="50"
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
           </label>
-          <button onClick={handleSave}>保存</button>
+          <button onClick={handleSave} className="px-4 py-2 bg-green-500 text-white rounded-md">Save</button>
         </div>
       ) : (
-        <div>
-          <p>Login ID: {user.login_id}</p>
-          <p>Nick Name: {user.nick_name}</p>
-          <p>Email: {user.email}</p>
-          <p>Type: {user.type}</p>
-
+        <div className="space-y-4">
+          <p className="text-gray-700">Login ID: {user.login_id}</p>
+          <p className="text-gray-700">Nick Name: {user.nick_name}</p>
+          <p className="text-gray-700">Email: {user.email}</p>
+          <p className="text-gray-700">Type: {user.type}</p>
           <img
             src={user.profile_image || "/default-avatar.png"}
             alt="Profile"
             onError={(e) => { e.target.src = "/default-avatar.png"; }}
-            style={{ width: "150px", height: "150px", borderRadius: "50%" }}
+            className="w-36 h-36 rounded-full mx-auto"
           />
-
-          <p> {user.description}</p>
-
-          <button onClick={() => setEditMode(true)}>修改</button>
+          <p className="text-gray-600">{user.description}</p>
+          <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-yellow-500 text-white rounded-md">Edit</button>
         </div>
       )}
     </div>
