@@ -63,7 +63,7 @@ export default function VendorMenu() {
 
         try {
             console.log("📡 [DEBUG] Adding new food:", newFood);
-            const response = await axios.post("http://localhost:9000/api/vendor/menu", newFood);
+            const response = await axios.post("http://localhost:5000/api/vendor/menu", newFood);
             console.log("✅ [DEBUG] New food added:", response.data);
             setMenu((prevMenu) => [...prevMenu, response.data]);  // 更新菜单
         } catch (err) {
@@ -80,7 +80,7 @@ export default function VendorMenu() {
     const handleSaveFood = async (updatedFood) => {
         try {
             console.log("📡 [DEBUG] Updating food:", updatedFood);
-            const response = await axios.put(`http://localhost:9000/api/vendor/menu/${updatedFood.id}`, updatedFood);
+            const response = await axios.put(`http://localhost:5000/api/vendor/menu/${updatedFood.id}`, updatedFood);
             console.log("✅ [DEBUG] Food updated:", response.data);
 
             // 更新菜单
@@ -98,7 +98,7 @@ export default function VendorMenu() {
     const handleDeleteFood = async (foodId) => {
         try {
             console.log("📡 [DEBUG] Deleting food:", foodId);
-            await axios.delete(`http://localhost:9000/api/vendor/menu/${foodId}?restaurantId=${restaurantId}`);
+            await axios.delete(`http://localhost:5000/api/vendor/menu/${foodId}?restaurantId=${restaurantId}`);
             console.log("✅ [DEBUG] Food deleted");
             setMenu((prevMenu) => prevMenu.filter((food) => food.id !== foodId));
         } catch (err) {
