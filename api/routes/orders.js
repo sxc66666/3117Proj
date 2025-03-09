@@ -75,21 +75,15 @@ router.get("/:user_id", async (req, res) => {
         const orders = ordersResult.rows;
         // 获取每个订单的 items
         for (let order of orders) {
-            // const itemsResult = await pool.query(
-            //     `SELECT f.name, oi.quantity, f.price
-            //      FROM order_items oi
-            //      JOIN foods f ON oi.food_id = f.id
-            //      WHERE oi.order_id = $1` ,
-            //     [order.id]
-            // );
-
             const itemsResult = await pool.query(
                 `SELECT f.name, oi.quantity, f.price
                  FROM order_items oi
                  JOIN foods f ON oi.food_id = f.id
-                 WHERE oi.order_id = $1 AND f.is_active = true`,
+                 WHERE oi.order_id = $1` ,
                 [order.id]
             );
+
+
             
             order.items = itemsResult.rows;
         }
@@ -112,9 +106,10 @@ router.get("/:user_id", async (req, res) => {
                 `SELECT f.name, oi.quantity, f.price
                  FROM order_items oi
                  JOIN foods f ON oi.food_id = f.id
-                 WHERE oi.order_id = $1 AND f.is_active = true`,
+                 WHERE oi.order_id = $1` ,
                 [order.id]
             );
+
             order.items = itemsResult.rows;
         }
         res.json(orders);

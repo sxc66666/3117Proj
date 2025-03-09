@@ -65,7 +65,7 @@ app.get('/api/restaurants', async (req, res) => {
 app.get('/api/foods/:restaurantId', async (req, res) => {
   const { restaurantId } = req.params;
   try {
-    const result = await pool.query('SELECT * FROM public.foods WHERE restaurant_id = $1', [restaurantId]);
+    const result = await pool.query('SELECT * FROM public.foods WHERE restaurant_id = $1 and is_active = true', [restaurantId] );
     console.log("Fetched foods for restaurant:", result.rows);
     res.json(result.rows);
   } catch (err) {

@@ -13,7 +13,7 @@ const CustAccount = () => {
       const parsedUser = JSON.parse(storedUser);
       
       // 处理 profile_image 路径
-      if (parsedUser.profile_image && parsedUser.profile_image.startsWith("D:\\")) {
+      if (parsedUser.profile_image && parsedUser.profile_image.startsWith("F:\\")) {
         const filename = parsedUser.profile_image.split("\\").pop(); // 获取文件名
         parsedUser.profile_image = `http://localhost:5000/uploads/${filename}`;
       }
