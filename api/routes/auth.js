@@ -18,6 +18,8 @@ const pool = new Pool({
 
 // 设置上传目录的路径
 const uploadsDir = path.join(__dirname, 'uploads');
+const baseURL = "http://localhost:5000/uploads/";
+
 
 // 确保 uploads 目录存在，如果没有则创建它
 if (!fs.existsSync(uploadsDir)) {
@@ -39,44 +41,32 @@ const upload = multer({ storage: storage });
 // ✅ 用户注册 API
 router.post("/register", upload.single("profile_image"), async (req, res) => {
   const { login_id, password, nick_name, email, type } = req.body;
-  
-  // 检查是否传递了密码
   if (!password || password === "") {
     return res.status(400).json({ message: "Password is required" });
   }
-
   try {
-    // 检查必填字段
     if (!login_id || !nick_name || !email || !type) {
       return res.status(400).json({ message: "All fields are required" });
     }
-
-    // 检查 login_id 是否已经存在
     const existingUserByLoginId = await pool.query("SELECT * FROM users WHERE login_id = $1", [login_id]);
     if (existingUserByLoginId.rows.length > 0) {
       return res.status(400).json({ message: "Login ID already exists" });
     }
 
-    
-    // 获取上传的文件路径，如果文件不存在，使用 null 或者默认头像路径
-    const profile_image = req.file ? req.file.path : null;  // 如果没有文件上传，则为 null
+    let profile_image = req.file ? `${baseURL}${req.file.filename}` : null;
 
-    // 插入用户信息到数据库
     await pool.query(
       "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6)",
       [login_id, password, nick_name, email, type, profile_image]
     );
 
     if (type === "restaurant") {
-      console.log("✅ Registering restaurant user:", login_id);
-      const result = await pool.query(
-        "insert into restaurants (name, image, id) values ($1, $2, (select id from users where login_id = $3)) RETURNING *",
+      await pool.query(
+        "INSERT INTO restaurants (name, image, id) VALUES ($1, $2, (SELECT id FROM users WHERE login_id = $3))",
         [nick_name, profile_image, login_id]
       );
-      console.log("Inserted row:", result.rows);
-      
-  }
-    
+    }
+
     res.json({ message: "User registered successfully" });
   } catch (error) {
     console.error("❌ Registration Error:", error);
