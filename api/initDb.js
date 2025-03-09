@@ -53,11 +53,11 @@ CREATE TABLE restaurants (
 
   -- 预先插入餐厅数据，并正确绑定 owner_id
   INSERT INTO restaurants (name, description, image, id) VALUES
-  ('Pizza Hut', 'Delicious pizza with various toppings', 'https://example.com/sampleImage1.jpg',
+  ('Pizza Hut', 'Delicious pizza with various toppings', 'https://i.postimg.cc/vTzm3cx0/pizzahut.png',
    (SELECT id FROM users WHERE login_id = 'vendor1')),
-  ('Sushi Express', 'Fresh sushi and sashimi', 'https://example.com/sampleImage2.jpg',
+  ('Sushi Express', 'Fresh sushi and sashimi', 'https://i.postimg.cc/DwmzPfvc/sushi-Express.png',
    (SELECT id FROM users WHERE login_id = 'vendor2')),
-  ('Burger King', 'Tasty burgers and crispy fries', 'https://example.com/sampleImage3.jpg',
+  ('Burger King', 'Tasty burgers and crispy fries', 'https://i.postimg.cc/QdPd4LVZ/burger-king.png',
    (SELECT id FROM users WHERE login_id = 'vendor3'));
 
   -- 创建食物表（绑定餐厅）
@@ -73,12 +73,12 @@ CREATE TABLE restaurants (
 
   -- 预先插入食品数据
   INSERT INTO foods (restaurant_id, name, description, price, image) VALUES
-  ((SELECT id FROM restaurants WHERE name = 'Pizza Hut'), 'BBQ Ribs', 'Tender ribs coated in a smoky BBQ sauce', 98, 'https://example.com/sampleImageBBQ.jpg'),
-  ((SELECT id FROM restaurants WHERE name = 'Pizza Hut'), 'Vegetable Pizza', 'A pizza topped with fresh vegetables', 68, 'https://example.com/sampleImageVegPizza.jpg'),
-  ((SELECT id FROM restaurants WHERE name = 'Sushi Express'), 'Salmon Sushi', 'Fresh salmon sushi rolls', 48, 'https://example.com/sampleImageSushi.jpg'),
-  ((SELECT id FROM restaurants WHERE name = 'Sushi Express'), 'Tuna Sashimi', 'Premium tuna sashimi slices', 88, 'https://example.com/sampleImageSashimi.jpg'),
-  ((SELECT id FROM restaurants WHERE name = 'Burger King'), 'Cheeseburger', 'Juicy cheeseburger with crispy fries', 58, 'https://example.com/sampleImageBurger.jpg'),
-  ((SELECT id FROM restaurants WHERE name = 'Burger King'), 'Chicken Wrap', 'Grilled chicken wrap with fresh lettuce', 52, 'https://example.com/sampleImageWrap.jpg');
+  ((SELECT id FROM restaurants WHERE name = 'Pizza Hut'), 'BBQ Ribs', 'Tender ribs coated in a smoky BBQ sauce', 98, 'https://i.postimg.cc/WzX20CxK/rib.jpg'),
+  ((SELECT id FROM restaurants WHERE name = 'Pizza Hut'), 'Vegetable Pizza', 'A pizza topped with fresh vegetables', 68, 'https://i.postimg.cc/GmBcsMK7/veggie-pizza-3-1.jpg'),
+  ((SELECT id FROM restaurants WHERE name = 'Sushi Express'), 'Salmon Sushi', 'Fresh salmon sushi rolls', 48, 'https://i.postimg.cc/rsFTygz9/sushi.jpg'),
+  ((SELECT id FROM restaurants WHERE name = 'Sushi Express'), 'Tuna Sashimi', 'Premium tuna sashimi slices', 88, 'https://i.postimg.cc/X7qWT2Rj/tuna.jpg'),
+  ((SELECT id FROM restaurants WHERE name = 'Burger King'), 'Cheeseburger', 'Juicy cheeseburger with crispy fries', 58, 'https://i.postimg.cc/HsNmHwmQ/Great-American-Burger.jpg'),
+  ((SELECT id FROM restaurants WHERE name = 'Burger King'), 'Chicken Wrap', 'Grilled chicken wrap with fresh lettuce', 52, 'https://i.postimg.cc/5tdMQf6y/Chicken-Wrap.jpg');
 
   -- 创建订单表
   CREATE TABLE orders (
