@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import useAuthStore from '../components/useAuthSore';  // 引入 zustand store
 import { useNavigate } from 'react-router-dom'; // 导入 useNavigate
-//import 'bootstrap/dist/css/bootstrap.min.css'; // 引入 Bootstrap 样式
 import FormInput from "../components/FormInput";
 
 export default function Auth() {
@@ -26,17 +25,17 @@ export default function Auth() {
       /(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/,
       "$1"
     );
-  
+
     if (storedUser || cookieUserId) {
       try {
         // 解析存储的用户信息（如果存的是 JSON 格式）
         const user = storedUser ? JSON.parse(storedUser) : null;
-        
+
         if (!user || !user.type) {
           navigate("/"); // 兜底跳转，防止数据异常
           return;
         }
-  
+
         // 根据用户类型跳转到不同的页面
         if (user.type === "consumer") {
           navigate(`/cust/restaurants`);  // 进入消费者页面
@@ -51,7 +50,7 @@ export default function Auth() {
       }
     }
   }, [navigate]);
-  
+
 
   // 切换注册/登录状态
   const toggleForm = () => {
@@ -127,15 +126,15 @@ export default function Auth() {
 
       if (!isRegister) {
         setUser(response.data.user);
-      
+
         // 设置 Cookie 以存储 user_id
         document.cookie = `user_id=${response.data.user.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
         localStorage.setItem("user", JSON.stringify(response.data.user));
-      
+
         // 获取用户类型和 ID
         const userType = response.data.user.type;
         const restaurantId = response.data.user.id; // 假设用户ID是 restaurantId
-      
+
         if (userType === "consumer") {
           navigate(`/cust/restaurants`);  // 进入消费者页面
         } else if (userType === "restaurant") {
@@ -146,8 +145,8 @@ export default function Auth() {
       } else {
         toggleForm();
       }
-      
-      
+
+
     } catch (error) {
       setMessage(error.response?.data?.message || "Error occurred");
     }
@@ -161,104 +160,6 @@ export default function Auth() {
     navigate("/"); // 重定向到首页或登录页
   };
 
-  // return (
-  //   <div className="container mt-5 d-flex justify-content-center">
-  //     <div className="card shadow p-4" style={{ width: "400px" }}>
-  //       <h2 className="text-center mb-4">{isRegister ? "Register" : "Login"}</h2>
-        
-  //       {message && <div className="alert alert-info text-center">{message}</div>}
-
-  //       <form onSubmit={handleSubmit}>
-  //         <div className="form-group mb-3">
-  //           <input
-  //             type="text"
-  //             className="form-control"
-  //             placeholder="Login ID"
-  //             value={loginId}
-  //             onChange={(e) => setLoginId(e.target.value)}
-  //             required
-  //           />
-  //         </div>
-
-  //         {isRegister && (
-  //           <>
-  //             <div className="form-group mb-3">
-  //               <input
-  //                 type="text"
-  //                 className="form-control"
-  //                 placeholder="Nick Name"
-  //                 value={nickName}
-  //                 onChange={(e) => setNickName(e.target.value)}
-  //                 required
-  //               />
-  //             </div>
-  //             <div className="form-group mb-3">
-  //               <input
-  //                 type="email"
-  //                 className="form-control"
-  //                 placeholder="Email Address"
-  //                 value={email}
-  //                 onChange={(e) => setEmail(e.target.value)}
-  //                 required
-  //               />
-  //             </div>
-  //             <div className="form-group mb-3">
-  //               <select
-  //                 className="form-control"
-  //                 value={type}
-  //                 onChange={(e) => setType(e.target.value)}
-  //                 required
-  //               >
-  //                 <option value="consumer">Consumer</option>
-  //                 <option value="restaurant">Restaurant</option>
-  //               </select>
-  //             </div>
-  //             <div className="form-group mb-3">
-  //               <input
-  //                 type="file"
-  //                 className="form-control"
-  //                 onChange={(e) => setProfileImage(e.target.files[0])}
-  //               />
-  //             </div>
-  //           </>
-  //         )}
-
-  //         <div className="form-group mb-3">
-  //           <input
-  //             type="password"
-  //             className="form-control"
-  //             placeholder="Password"
-  //             value={password}
-  //             onChange={(e) => setPassword(e.target.value)}
-  //             required
-  //           />
-  //         </div>
-
-  //         <button type="submit" className="btn btn-primary w-100">
-  //           {isRegister ? "Register" : "Login"}
-  //         </button>
-  //       </form>
-
-  //       <div className="text-center mt-3">
-  //         {isRegister ? (
-  //           <button className="btn btn-link" onClick={toggleForm}>
-  //             Already have an account? Login
-  //           </button>
-  //         ) : (
-  //           <button className="btn btn-link" onClick={toggleForm}>
-  //             Don't have an account? Register
-  //           </button>
-  //         )}
-  //       </div>
-
-  //       {user && !isRegister && (
-  //         <button className="btn btn-danger w-100 mt-2" onClick={handleLogout}>
-  //           Logout
-  //         </button>
-  //       )}
-  //     </div>
-  //   </div>
-  // );
   return (
     <div className="flex justify-center mt-10">
       <div className="w-96 bg-white p-6 rounded-lg shadow-md">

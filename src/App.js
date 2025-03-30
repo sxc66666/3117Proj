@@ -1,10 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Auth from "./pages/Auth";
 import CustRestaurants from "./pages/CustRestaurants";
 import CustMenu from "./pages/CustMenu";
 import CustCheckout from "./pages/CustCheckout";
-import MainVendor from "./pages/MainVendor";
 import CustAccount from "./pages/CustAccount";
 import VendAccount from "./pages/VendAccount";
 
@@ -20,19 +18,23 @@ const App = () => {
   return (
     <div>
       <Routes>
+        {/* Account related routes */}
         <Route path="/" element={<Login />} />
-        <Route path="/Auth" element={<Auth />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/CustAccount" element={<CustAccount />} />
+        <Route path="/VendAccount" element={<VendAccount />} />
+
+        {/* Customer related routes */}
         <Route path="/cust/restaurants" element={<CustRestaurants />} />
         <Route path="/cust/restaurants/:restaurantId" element={<CustMenu />} />
         <Route path="/cust/checkout" element={<CustCheckout />} />
-
-        {/* 登出页面 */}
-        <Route path="/logout" element={<Logout />} />
         <Route path="/cust/complete" element={<CustComplete />} />
+
+        {/* Vendor related routes */}
         <Route path="/vend/menu" element={<VendMenu />} />
+
+        {/* Shared routes */}
         <Route path="/orders" element={<Orders />} />
-        <Route path="/CustAccount" element={<CustAccount />} />
-        <Route path="/VendAccount" element={<VendAccount />} />
 
         
 

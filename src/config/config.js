@@ -14,7 +14,3 @@ export const menuLinksCust = [
       ],
   }
 ];
-
-
-// http://localhost:3000/vend/menu-->/VendAccount
-// http://localhost:3000/cust/restaurants-->/CustAccount
