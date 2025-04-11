@@ -30,12 +30,44 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// 密码强度验证函数
+const validatePasswordStrength = (password) => {
+  const minLength = 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  
+  const errors = [];
+  if (password.length < minLength) {
+    errors.push(`密码长度至少为${minLength}个字符`);
+  }
+  if (!hasUpperCase) errors.push("需要包含大写字母");
+  if (!hasLowerCase) errors.push("需要包含小写字母");
+  if (!hasNumbers) errors.push("需要包含数字");
+  if (!hasSpecialChar) errors.push("需要包含特殊字符");
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
 // ✅ 用户注册 API
 router.post("/register", upload.single("profile_image"), async (req, res) => {
   const { login_id, password, nick_name, email, type } = req.body;
   const profile_image = req.file ? req.file.path : null;
 
   try {
+    // 验证密码强度
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.isValid) {
+      return res.status(400).json({ 
+        message: "密码强度不足",
+        errors: passwordValidation.errors
+      });
+    }
+
     // 检查用户是否已存在
     const userExists = await pool.query("SELECT * FROM users WHERE login_id = $1", [login_id]);
     if (userExists.rows.length > 0) {
