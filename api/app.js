@@ -9,8 +9,8 @@ const authRouter = require("./routes/auth");
 const vendorRouter = require("./routes/vendorRoutes");
 const logoutRouter = require("./routes/logout");
 const orderRoutes = require("./routes/orders");
-const custAccountRoutes = require("./routes/CustAccountBack");
-const vendAccountRoutes = require("./routes/VendAccountBack");
+const custAccountRoutes = require("./routes/custAccountBack");
+const vendAccountRoutes = require("./routes/vendAccountBack");
 const restaurantRoutes = require("./routes/restaurantFood");
 
 // 导入数据库连接

@@ -4,6 +4,7 @@ const pool = require("../db/db");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const SALT_ROUNDS = 10;
 
 const router = express.Router();
 
@@ -32,23 +33,22 @@ const upload = multer({ storage: storage });
 // ✅ 用户注册 API
 router.post("/register", upload.single("profile_image"), async (req, res) => {
   const { login_id, password, nick_name, email, type } = req.body;
-  if (!password || password === "") {
-    return res.status(400).json({ message: "Password is required" });
-  }
+  const profile_image = req.file ? req.file.path : null;
+
   try {
-    if (!login_id || !nick_name || !email || !type) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-    const existingUserByLoginId = await pool.query("SELECT * FROM users WHERE login_id = $1", [login_id]);
-    if (existingUserByLoginId.rows.length > 0) {
-      return res.status(400).json({ message: "Login ID already exists" });
+    // 检查用户是否已存在
+    const userExists = await pool.query("SELECT * FROM users WHERE login_id = $1", [login_id]);
+    if (userExists.rows.length > 0) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    let profile_image = req.file ? `${baseURL}${req.file.filename}` : null;
+    // 使用bcrypt加密密码
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    await pool.query(
-      "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6)",
-      [login_id, password, nick_name, email, type, profile_image]
+    // 插入新用户
+    const result = await pool.query(
+      "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [login_id, hashedPassword, nick_name, email, type, profile_image]
     );
 
     if (type === "restaurant") {
@@ -58,10 +58,13 @@ router.post("/register", upload.single("profile_image"), async (req, res) => {
       );
     }
 
-    res.json({ message: "User registered successfully" });
+    res.json({
+      message: "Registration successful",
+      user: result.rows[0],
+    });
   } catch (error) {
-    console.error("❌ Registration Error:", error);
-    res.status(500).json({ message: "Error registering user" });
+    console.error("Registration Error:", error);
+    return res.status(500).json({ message: "Error registering user", error: error.message });
   }
 });
 
@@ -85,8 +88,9 @@ router.post("/login", async (req, res) => {
 
     console.log("User found in database:", user);
 
-    // ✅ 直接比对明文密码（仅限测试环境）
-    if (password !== user.password) {
+    // 使用bcrypt验证密码
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
       console.log("❌ Password is invalid");
       return res.status(400).json({ message: "Invalid password" });
     }
@@ -106,8 +110,8 @@ router.post("/login", async (req, res) => {
         email: user.email,
         type: user.type,
         profile_image: user.profile_image,
-        restaurant_id: restaurant_id,  // ✅ 返回 `restaurant_id`
-        description: null,  // 返回餐厅的 `description`，默认为空字符串
+        restaurant_id: restaurant_id,
+        description: null,
       },
     });
   } catch (error) {
