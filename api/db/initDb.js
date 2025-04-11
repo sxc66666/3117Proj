@@ -1,16 +1,6 @@
 const { Pool } = require("pg");
 const dotenv = require('dotenv');
-
-dotenv.config();
-
-// 配置 PostgreSQL 连接
-const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE, // 修改为你的数据库名
-  password: process.env.DB_PASSWORD, // 修改为你的数据库密码
-  port: process.env.DB_PORT,
-});
+const pool = require('./db');
 
 // 创建表格的 SQL 语句
 const createTableQuery = `
@@ -112,8 +102,6 @@ async function createTable() {
     client.release();
   } catch (error) {
     console.error("Error creating table:", error);
-  } finally {
-    await pool.end(); // 关闭数据库连接
   }
 }
 

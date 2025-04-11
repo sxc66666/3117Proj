@@ -13,9 +13,6 @@ const custAccountRoutes = require("./routes/custAccountBack");
 const vendAccountRoutes = require("./routes/vendAccountBack");
 const restaurantRoutes = require("./routes/restaurantFood");
 
-// 导入数据库连接
-const pool = require("./db/db");
-
 // 导入数据库初始化脚本
 const { createTable } = require('./db/initDb');
 
