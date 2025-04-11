@@ -74,8 +74,8 @@ export default function Auth() {
     }
 
     const url = isRegister
-      ? "http://localhost:5000/auth/register"
-      : "http://localhost:5000/auth/login";
+      ? "http://localhost:5000/api/auth/register"
+      : "http://localhost:5000/api/auth/login";
 
     try {
       let response;
