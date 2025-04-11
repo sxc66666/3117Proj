@@ -1,12 +1,15 @@
 const { Pool } = require("pg");
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 // 配置 PostgreSQL 连接
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "food_ordering_system", // 修改为你的数据库名
-  password: "12345", // 修改为你的数据库密码
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE, // 修改为你的数据库名
+  password: process.env.DB_PASSWORD, // 修改为你的数据库密码
+  port: process.env.DB_PORT,
 });
 
 // 创建表格的 SQL 语句
@@ -116,3 +119,5 @@ async function createTable() {
 
 // 执行表格创建
 createTable();
+
+module.exports = createTable;

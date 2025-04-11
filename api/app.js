@@ -15,7 +15,7 @@ const orderRoutes = require("./routes/orders");  // 确保正确引入并设置�
 const app = express();
 
 // 引入数据库初始化脚本
-require('./initDb');  // initDb.js 放在项目根目录下
+const { createTable } = require('./db/initDb');
 
 // ✅ 先启用 `cookieParser`，以确保 `credentials` 正常工作
 app.use(cookieParser());
