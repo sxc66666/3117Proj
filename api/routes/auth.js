@@ -7,8 +7,8 @@ const fs = require("fs");
 
 const router = express.Router();
 
-// 设置上传目录的路径
-const uploadsDir = path.join(__dirname, 'uploads');
+// 修改上传目录的路径
+const uploadsDir = path.join(__dirname, '..', 'uploads');
 const baseURL = "http://localhost:5000/uploads/";
 
 

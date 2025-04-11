@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(logger("dev"));
 
 // ✅ 设置 `uploads` 目录为静态文件目录
-const uploadsPath = path.join(__dirname, 'routes', 'uploads');
+const uploadsPath = path.join(__dirname, 'uploads');
 console.log(`📂 Serving static files from: ${uploadsPath}`);
 app.use('/uploads', express.static(uploadsPath));
 

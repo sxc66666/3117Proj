@@ -20,7 +20,7 @@ app.use(cors({
 }));
 
 // ✅ 确保 Express 托管 `uploads` 目录
-const uploadsPath = path.join(__dirname, '../routes/uploads');
+const uploadsPath = path.join(__dirname, '../uploads');
 console.log(`📂 Serving static files from: ${uploadsPath}`);
 app.use('/uploads', express.static(uploadsPath));
 

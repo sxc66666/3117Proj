@@ -24,4 +24,4 @@ yarn-debug.log*
 yarn-error.log*
 
 # Uploaded files
-/api/routes/uploads/
+/api/uploads/
