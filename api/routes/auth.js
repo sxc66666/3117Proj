@@ -1,20 +1,11 @@
 const express = require("express");
 const bcrypt = require("bcryptjs"); // 使用 bcryptjs 兼容 Windows
-const { Pool } = require("pg");
+const pool = require("../db/db");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
 const router = express.Router();
-
-// 配置 PostgreSQL 连接
-const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "food_ordering_system",
-  password: "12345", // 修改为你的 PostgreSQL 密码
-  port: 5432,
-});
 
 // 设置上传目录的路径
 const uploadsDir = path.join(__dirname, 'uploads');
