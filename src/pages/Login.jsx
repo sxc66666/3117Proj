@@ -175,6 +175,7 @@ export default function Auth() {
 
         response = await axios.post(url, data, {
           headers: { "Content-Type": "application/json" },
+          withCredentials: true
         });
       }
 

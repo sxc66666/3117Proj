@@ -5,6 +5,9 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const SALT_ROUNDS = 10;
+const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv');
+dotenv.config();
 
 const router = express.Router();
 
@@ -128,10 +131,36 @@ router.post("/login", async (req, res) => {
     }
 
     console.log("✅ Login successful for user:", user.login_id);
-
+    
     // 获取 `restaurant_id`
     const restaurantResult = await pool.query("SELECT id FROM restaurants WHERE id = $1", [user.id]);
     const restaurant_id = restaurantResult.rows.length > 0 ? restaurantResult.rows[0].id : null;
+
+    // 验证成功后，创建 JWT token
+    const token = jwt.sign(
+      {
+        id: user.id,
+        login_id: user.login_id,
+        nick_name: user.nick_name,
+        email: user.email,
+        type: user.type,
+        profile_image: user.profile_image,
+        restaurant_id: restaurant_id,
+        description: null,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // 使用 httpOnly cookie 设置 token
+    res.cookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // 生产环境使用 HTTPS ！！！！以后必须修改这个
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000, // 24小时
+      domain: process.env.DOMAIN // 设置 cookie 的域名 !!!!!!! 以后必须修改这个
+    });
+
 
     res.json({
       message: "Login successful",

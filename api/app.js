@@ -27,7 +27,9 @@ const configureMiddleware = () => {
   // 配置CORS
   app.use(cors({
     origin: "http://localhost:3000",
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    //allowedHeaders: ['Content-Type', 'Authorization']
   }));
   
   // 解析请求体

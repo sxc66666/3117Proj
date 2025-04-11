@@ -9,8 +9,6 @@ const Logout = () => {
   const handleLogout = async () => {
     console.log("🔵 handleLogout clicked"); // 确保函数被调用
 
-
-
     try {
       console.log("🔵 Sending logout request for user ID:", user.id);
 
@@ -23,7 +21,6 @@ const Logout = () => {
         credentials: "include",  // ✅ 允许携带 Cookie
       });
 
-
       const data = await response.json();
       console.log("🟢 Logout response:", data);
 
@@ -31,9 +28,12 @@ const Logout = () => {
       console.error("❌ Failed to update last_login:", error);
     }
 
-    // 清除本地存储和 cookie
-    document.cookie = "user_id=; path=/; max-age=-1";
-    localStorage.removeItem("user");
+    // 清除所有认证相关的信息
+    // 清除cookie，需要设置相同的domain和path
+    document.cookie = "user_id=; path=/; domain=localhost; max-age=-1";
+    document.cookie = "auth_token=; path=/; domain=localhost; max-age=-1";
+    localStorage.clear();
+    sessionStorage.clear();
     clearUser();
     navigate("/");
   };
