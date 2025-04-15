@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require('helmet');
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const path = require("path");
@@ -43,6 +44,36 @@ const configureMiddleware = () => {
   const uploadsPath = path.join(__dirname, 'uploads');
   console.log(`📂 Serving static files from: ${uploadsPath}`);
   app.use('/uploads', express.static(uploadsPath));
+
+  // 使用helmet保护应用 默认配置
+  app.use(helmet());
+  // 禁用 XSS 过滤器
+  app.use(helmet.xssFilter({ setOnOldIE: true }));
+  // 防止点击劫持（Clickjacking）
+  app.use(helmet.frameguard({ action: 'deny' }));
+  // 防止 MIME 类型嗅探
+  app.use(helmet.noSniff());
+  // 禁用 HTTP-Powered-By 信息
+  app.use(helmet.hidePoweredBy());
+  // 禁用 DNS 预取
+  app.use(helmet.dnsPrefetchControl({ allow: false }));
+
+  app.use(
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'"],         // 只允许同源加载资源
+        scriptSrc: ["'self'"],  // 允许从指定域加载脚本
+        styleSrc: ["'self'"],  // 允许加载同源和内联样式
+        objectSrc: ["'none'"],          // 禁止嵌套对象
+        connectSrc: ["'self'"],         // 只允许从同源请求
+        fontSrc: ["'self'"],            // 只允许加载同源字体
+        frameSrc: ["'none'"],           // 禁止嵌套框架
+        // upgradeInsecureRequests: [],    // 强制将 HTTP 请求升级为 HTTPS
+      },
+    })
+  );
+  
+
 };
 
 // 配置路由
