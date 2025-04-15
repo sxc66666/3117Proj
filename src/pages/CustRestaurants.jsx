@@ -3,8 +3,8 @@ import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
 import RestaurantList from "../components/RestaurantList";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";  // 引入 axios
-import { menuLinksCust } from "../config/config";  // 导入 menuLinksCust
+import axiosInstance from "../config/axiosInstance";  // 引入 axios
+import { menuLinksCust } from "../config/navbarConfig";  // 导入 menuLinksCust
 
 export default function CustRestaurant() {
   const [restaurants, setRestaurants] = useState([]);  // 新增状态来存储餐厅数据
@@ -13,7 +13,7 @@ export default function CustRestaurant() {
 
   useEffect(() => {
     // 请求后端 API 获取餐厅数据
-    axios.get('http://localhost:5000/api/restaurants')  // 假设你的后端在 localhost:5000
+    axiosInstance.get('http://localhost:5000/api/restaurants')  // 假设你的后端在 localhost:5000
       .then((response) => {
         console.log("Fetched restaurants:", response.data);  // 打印获取的餐厅数据
         setRestaurants(response.data);  // 将获取的数据存储到状态中

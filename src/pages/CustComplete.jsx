@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
-import { menuLinksCust } from "../config/config";
+import { menuLinksCust } from "../config/navbarConfig";
 
 export default function CustComplete() {
     const navigate = useNavigate();

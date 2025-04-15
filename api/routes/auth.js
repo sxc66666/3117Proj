@@ -160,6 +160,7 @@ router.post("/login", async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000, // 24小时
       domain: process.env.DOMAIN // 设置 cookie 的域名 !!!!!!! 以后必须修改这个
     });
+    console.log('Token set:', token);
 
 
     res.json({

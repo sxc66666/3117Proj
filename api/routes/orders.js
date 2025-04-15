@@ -1,3 +1,6 @@
+// 用token内userid替换现有读取id逻辑    Done
+// 去掉读取前端直接返回id逻辑           X
+
 const express = require("express");
 const router = express.Router();
 const pool = require("../db/db");
@@ -14,17 +17,20 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ error: "Invalid order data" });
         }
 
+        // 使用token读取id
+        const idFromToken = req.user.id;
+
         // 验证 user_id 是否存在
-        const userResult = await pool.query("SELECT id FROM users WHERE id = $1", [user_id]);
+        const userResult = await pool.query("SELECT id FROM users WHERE id = $1", [idFromToken]);
         if (userResult.rows.length === 0) {
-            console.error("❌ [ERROR] Invalid user_id:", user_id);
+            console.error("❌ [ERROR] Invalid user_id:", idFromToken);
             return res.status(400).json({ error: "Invalid user_id" });
         }
 
         // 创建订单
         const orderResult = await pool.query(
             "INSERT INTO orders (restaurant_id, user_id, total_price) VALUES ($1, $2, $3) RETURNING id",
-            [restaurant_id, user_id, total_price]
+            [restaurant_id, idFromToken, total_price]
         );
 
         const orderId = orderResult.rows[0].id;
@@ -55,8 +61,12 @@ router.post("/", async (req, res) => {
 router.get("/:user_id", async (req, res) => {
     // 获取用户 ID
     const { user_id } = req.params;
+
+    // 使用token读取id
+    const idFromToken = req.user.id;
+
     // 在数据库中查询该用户type，是“consumer”还是“restaurant”
-    const user = await pool.query("SELECT type FROM users WHERE id = $1", [user_id]);
+    const user = await pool.query("SELECT type FROM users WHERE id = $1", [idFromToken]);
     // 如果用户不存在
     if (user.rows.length === 0) {
         return res.status(404).json({ error: "User not found" });
@@ -70,7 +80,7 @@ router.get("/:user_id", async (req, res) => {
              JOIN restaurants r ON o.restaurant_id = r.id
              WHERE o.user_id = $1
              ORDER BY o.created_at DESC`,
-            [user_id]
+            [idFromToken]
         );
         const orders = ordersResult.rows;
         // 获取每个订单的 items
@@ -97,7 +107,7 @@ router.get("/:user_id", async (req, res) => {
              JOIN users u ON o.user_id = u.id
              WHERE o.restaurant_id = $1
              ORDER BY o.created_at DESC`,
-            [user_id]
+            [idFromToken]
         );
         const orders = ordersResult.rows;
         // 获取每个订单的 items

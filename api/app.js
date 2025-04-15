@@ -13,6 +13,9 @@ const custAccountRoutes = require("./routes/custAccountBack");
 const vendAccountRoutes = require("./routes/vendAccountBack");
 const restaurantRoutes = require("./routes/restaurantFood");
 
+// 导入中间件
+const authToken = require("./middleware/authToken");
+
 // 导入数据库初始化脚本
 const { createTable } = require('./db/initDb');
 
@@ -29,7 +32,7 @@ const configureMiddleware = () => {
     origin: "http://localhost:3000",
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    //allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization']
   }));
   
   // 解析请求体
@@ -46,8 +49,12 @@ const configureMiddleware = () => {
 const configureRoutes = () => {
   // 认证相关路由
   app.use('/api/auth', authRouter);
-  app.use('/api/vendor', vendorRouter);
-  app.use('/api/logout', logoutRouter);
+
+  // 认证中间件
+  app.use(authToken); // pages below this middleware must be authenticated
+
+  // 登出相关路由
+  app.use('/api/logout', logoutRouter); // only legitimate user can ask for clearing cookies to prevent attacks
   
   // 账户相关路由
   app.use('/api', custAccountRoutes);
@@ -58,6 +65,9 @@ const configureRoutes = () => {
   
   // 餐厅相关路由
   app.use('/api', restaurantRoutes);
+  
+  // 供应商相关路由
+  app.use('/api/vendor', vendorRouter);
 };
 
 // 配置错误处理

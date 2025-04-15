@@ -1,3 +1,6 @@
+// 用token内userid替换现有读取id逻辑    Done
+// 去掉读取前端直接返回id逻辑           X
+
 const express = require("express");
 const pool = require("../db/db");
 const router = express.Router();
@@ -8,18 +11,22 @@ dotenv.config();
 router.post("/", async (req, res) => {
 
     console.log("Received request to logout user:", req.body);
-    const { id } = req.body;
-    console.log("User ID:", id);
+    // 已弃用
+    //const { id } = req.body;
+    //console.log("User ID:", id);
 
-  if (!id) {
+    // 使用token读取id
+    const idFromToken = req.user.id;
+
+  if (!idFromToken) {
     return res.status(400).json({ error: "User ID is required" });
   }
 
   try {
-    console.log("Updating last login for user:", id);
+    console.log("Updating last login for user:", idFromToken);
     const result = await pool.query(
       "UPDATE users SET last_login = NOW() WHERE id = $1 RETURNING *",
-      [id]
+      [idFromToken]
     );
 
     if (result.rowCount === 0) {

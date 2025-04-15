@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import useAuthStore from '../components/useAuthSore';
+import axiosInstance from '../config/axiosInstance';
+import useAuthStore from '../components/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import FormInput from "../components/FormInput";
 
@@ -163,7 +163,7 @@ export default function Auth() {
         formData.append("type", type);
         formData.append("profile_image", profileImage);
 
-        response = await axios.post(url, formData, {
+        response = await axiosInstance.post(url, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
@@ -173,7 +173,7 @@ export default function Auth() {
           password,
         };
 
-        response = await axios.post(url, data, {
+        response = await axiosInstance.post(url, data, {
           headers: { "Content-Type": "application/json" },
           withCredentials: true
         });

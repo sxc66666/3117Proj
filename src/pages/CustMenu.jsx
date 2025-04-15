@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import axios from "axios";
+import axiosInstance from "../config/axiosInstance";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
 import FoodList from "../components/FoodList";
-import { menuLinksCust } from "../config/config";
+import { menuLinksCust } from "../config/navbarConfig";
 import FooterCust from "../components/FooterCust";
 
 export default function CustMenu() {    
@@ -37,7 +37,7 @@ export default function CustMenu() {
         console.log("Restaurant ID received:", restaurantId);  // 输出 restaurantId，确保它是正确的
 
         if (restaurantId) {
-            axios.get(`http://localhost:5000/api/foods/${restaurantId}`)
+            axiosInstance.get(`/api/foods/${restaurantId}`)
                 .then((response) => {
                     console.log("Fetched foods:", response.data);  // 确认食品数据
                     setFoodData(response.data);  // 设置食品数据
