@@ -13,9 +13,11 @@ const orderRoutes = require("./routes/orders");
 const custAccountRoutes = require("./routes/custAccountBack");
 const vendAccountRoutes = require("./routes/vendAccountBack");
 const restaurantRoutes = require("./routes/restaurantFood");
+const verifyCaptchaRouter = require("./routes/verifyCaptcha");
 
 // 导入中间件
 const authToken = require("./middleware/authToken");
+const { rateLimitMiddleware, limiter } = require("./middleware/rateLimit");
 
 // 导入数据库初始化脚本
 const { createTable } = require('./db/initDb');
@@ -78,6 +80,15 @@ const configureMiddleware = () => {
 
 // 配置路由
 const configureRoutes = () => {
+  // 验证码相关路由
+  app.use('/api', verifyCaptchaRouter);
+
+  // 应用请求频率限制中间件
+  app.use(limiter);
+
+  // 应用自定义的 rateLimitMiddleware
+  app.use(rateLimitMiddleware);
+
   // 认证相关路由
   app.use('/api/auth', authRouter);
 

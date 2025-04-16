@@ -1,11 +1,10 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import CustRestaurants from "./pages/CustRestaurants";
 import CustMenu from "./pages/CustMenu";
 import CustCheckout from "./pages/CustCheckout";
 import CustAccount from "./pages/CustAccount";
 import VendAccount from "./pages/VendAccount";
-
 
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";  // 引入 Logout 页面
@@ -13,8 +12,17 @@ import CustComplete from "./pages/CustComplete";
 import Orders from "./pages/Orders";
 import VendMenu from "./pages/VendMenu";
 
+import HCaptchaPopup from "./components/HCaptchaPopup"; // 引入 HCaptcha 组件
 
 const App = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleCaptchaVerified = () => {
+    const previousPath = location.state?.from || "/";
+    navigate(previousPath);
+  };
+
   return (
     <div>
       <Routes>
@@ -36,8 +44,11 @@ const App = () => {
         {/* Shared routes */}
         <Route path="/orders" element={<Orders />} />
 
-        
-
+        {/* HCaptcha related routes */}
+        <Route
+          path="/hcaptcha"
+          element={<HCaptchaPopup onVerified={handleCaptchaVerified} />}
+        />
       </Routes>
     </div>
   );

@@ -3,6 +3,7 @@ import axiosInstance from '../config/axiosInstance';
 import useAuthStore from '../components/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import FormInput from "../components/FormInput";
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 // 密码强度指示器组件
 const PasswordStrengthIndicator = ({ password }) => {
