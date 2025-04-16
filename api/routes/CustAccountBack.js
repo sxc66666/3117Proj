@@ -1,3 +1,6 @@
+// 用token内userid替换现有读取id逻辑    Done
+// 去掉读取前端直接返回id逻辑           X
+
 const express = require("express");
 const pool = require("../db/db"); // 连接 PostgreSQL 的 db.js
 const router = express.Router();
@@ -7,14 +10,18 @@ router.put("/cust/update-Custuser", async (req, res) => {
   console.log("📥 收到客户账户更新请求:", req.body);
   const { id, email, nick_name, type, profile_image, password } = req.body;
 
-  // 检查是否提供了用户 ID
-  if (!id) {
-    return res.status(400).json({ message: "缺少用户 ID" });
-  }
+  // 已弃用 使用token读取id
+  // // 检查是否提供了用户 ID
+  // if (!id) {
+  //   return res.status(400).json({ message: "缺少用户 ID" });
+  // }
+
+  // 使用token读取id
+  const idFromToken = req.user.id;
 
   try {
     // 获取当前用户数据
-    const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+    const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [idFromToken]);
 
     // 如果没有找到该用户，返回 404
     if (userResult.rows.length === 0) {

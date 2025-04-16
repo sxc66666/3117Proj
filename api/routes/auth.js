@@ -1,23 +1,18 @@
 const express = require("express");
 const bcrypt = require("bcryptjs"); // 使用 bcryptjs 兼容 Windows
-const { Pool } = require("pg");
+const pool = require("../db/db");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const SALT_ROUNDS = 10;
+const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv');
+dotenv.config();
 
 const router = express.Router();
 
-// 配置 PostgreSQL 连接
-const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "food_ordering_system",
-  password: "12345", // 修改为你的 PostgreSQL 密码
-  port: 5432,
-});
-
-// 设置上传目录的路径
-const uploadsDir = path.join(__dirname, 'uploads');
+// 修改上传目录的路径
+const uploadsDir = path.join(__dirname, '..', 'uploads');
 const baseURL = "http://localhost:5000/uploads/";
 
 
@@ -38,26 +33,57 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// 密码强度验证函数
+const validatePasswordStrength = (password) => {
+  const minLength = 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  
+  const errors = [];
+  if (password.length < minLength) {
+    errors.push(`密码长度至少为${minLength}个字符`);
+  }
+  if (!hasUpperCase) errors.push("需要包含大写字母");
+  if (!hasLowerCase) errors.push("需要包含小写字母");
+  if (!hasNumbers) errors.push("需要包含数字");
+  if (!hasSpecialChar) errors.push("需要包含特殊字符");
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
 // ✅ 用户注册 API
 router.post("/register", upload.single("profile_image"), async (req, res) => {
   const { login_id, password, nick_name, email, type } = req.body;
-  if (!password || password === "") {
-    return res.status(400).json({ message: "Password is required" });
-  }
+  const profile_image = req.file ? req.file.path : null;
+
   try {
-    if (!login_id || !nick_name || !email || !type) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-    const existingUserByLoginId = await pool.query("SELECT * FROM users WHERE login_id = $1", [login_id]);
-    if (existingUserByLoginId.rows.length > 0) {
-      return res.status(400).json({ message: "Login ID already exists" });
+    // 验证密码强度
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.isValid) {
+      return res.status(400).json({ 
+        message: "密码强度不足",
+        errors: passwordValidation.errors
+      });
     }
 
-    let profile_image = req.file ? `${baseURL}${req.file.filename}` : null;
+    // 检查用户是否已存在
+    const userExists = await pool.query("SELECT * FROM users WHERE login_id = $1", [login_id]);
+    if (userExists.rows.length > 0) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
-    await pool.query(
-      "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6)",
-      [login_id, password, nick_name, email, type, profile_image]
+    // 使用bcrypt加密密码
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // 插入新用户
+    const result = await pool.query(
+      "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [login_id, hashedPassword, nick_name, email, type, profile_image]
     );
 
     if (type === "restaurant") {
@@ -67,10 +93,13 @@ router.post("/register", upload.single("profile_image"), async (req, res) => {
       );
     }
 
-    res.json({ message: "User registered successfully" });
+    res.json({
+      message: "Registration successful",
+      user: result.rows[0],
+    });
   } catch (error) {
-    console.error("❌ Registration Error:", error);
-    res.status(500).json({ message: "Error registering user" });
+    console.error("Registration Error:", error);
+    return res.status(500).json({ message: "Error registering user", error: error.message });
   }
 });
 
@@ -94,17 +123,45 @@ router.post("/login", async (req, res) => {
 
     console.log("User found in database:", user);
 
-    // ✅ 直接比对明文密码（仅限测试环境）
-    if (password !== user.password) {
+    // 使用bcrypt验证密码
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
       console.log("❌ Password is invalid");
       return res.status(400).json({ message: "Invalid password" });
     }
 
     console.log("✅ Login successful for user:", user.login_id);
-
+    
     // 获取 `restaurant_id`
     const restaurantResult = await pool.query("SELECT id FROM restaurants WHERE id = $1", [user.id]);
     const restaurant_id = restaurantResult.rows.length > 0 ? restaurantResult.rows[0].id : null;
+
+    // 验证成功后，创建 JWT token
+    const token = jwt.sign(
+      {
+        id: user.id,
+        login_id: user.login_id,
+        nick_name: user.nick_name,
+        email: user.email,
+        type: user.type,
+        profile_image: user.profile_image,
+        restaurant_id: restaurant_id,
+        description: null,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // 使用 httpOnly cookie 设置 token
+    res.cookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // 生产环境使用 HTTPS ！！！！以后必须修改这个
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000, // 24小时
+      domain: process.env.DOMAIN // 设置 cookie 的域名 !!!!!!! 以后必须修改这个
+    });
+    console.log('Token set:', token);
+
 
     res.json({
       message: "Login successful",
@@ -115,8 +172,8 @@ router.post("/login", async (req, res) => {
         email: user.email,
         type: user.type,
         profile_image: user.profile_image,
-        restaurant_id: restaurant_id,  // ✅ 返回 `restaurant_id`
-        description: null,  // 返回餐厅的 `description`，默认为空字符串
+        restaurant_id: restaurant_id,
+        description: null,
       },
     });
   } catch (error) {

@@ -1,10 +1,10 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../config/axiosInstance";
 import Navbar from "../components/Navbar";
 import CardContainerCust from "../components/CardContainerCust";
 import OrderSummary from "../components/OrderSummary";
-import { menuLinksCust } from "../config/config";
+import { menuLinksCust } from "../config/navbarConfig";
 import FooterCust from "../components/FooterCust";
 
 export default function CustCheckout() {   
@@ -61,7 +61,7 @@ export default function CustCheckout() {
             // Log the request payload to verify it includes the restaurantId
             console.log('Request payload:', JSON.stringify(orderData, null, 2));
     
-            const response = await axios.post("http://localhost:5000/api/orders", orderData); 
+            const response = await axiosInstance.post("/api/orders", orderData); 
 
             console.log("✅ [DEBUG] Order placed:", response.data);
     

@@ -1,88 +1,128 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require('helmet');
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const path = require("path");
 
-const pool = require("./db/db");  // ✅ 确保数据库连接
+// 导入路由
 const authRouter = require("./routes/auth");
 const vendorRouter = require("./routes/vendorRoutes");
+const logoutRouter = require("./routes/logout");
+const orderRoutes = require("./routes/orders");
+const custAccountRoutes = require("./routes/custAccountBack");
+const vendAccountRoutes = require("./routes/vendAccountBack");
+const restaurantRoutes = require("./routes/restaurantFood");
 
-const logoutRouter = require("./routes/logout");  // ✅ 引入 logout 路由
-const orderRoutes = require("./routes/orders");  // 确保正确引入并设置路由
+// 导入中间件
+const authToken = require("./middleware/authToken");
 
+// 导入数据库初始化脚本
+const { createTable } = require('./db/initDb');
 
+// 创建Express应用
 const app = express();
 
-// 引入数据库初始化脚本
-require('./initDb');  // initDb.js 放在项目根目录下
+// 配置中间件
+const configureMiddleware = () => {
+  // 启用cookie解析
+  app.use(cookieParser());
+  
+  // 配置CORS
+  app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
+  
+  // 解析请求体
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
+  
+  // 静态文件服务
+  const uploadsPath = path.join(__dirname, 'uploads');
+  console.log(`📂 Serving static files from: ${uploadsPath}`);
+  app.use('/uploads', express.static(uploadsPath));
 
-// ✅ 先启用 `cookieParser`，以确保 `credentials` 正常工作
-app.use(cookieParser());
+  // 使用helmet保护应用 默认配置
+  app.use(helmet());
+  // 禁用 XSS 过滤器
+  app.use(helmet.xssFilter({ setOnOldIE: true }));
+  // 防止点击劫持（Clickjacking）
+  app.use(helmet.frameguard({ action: 'deny' }));
+  // 防止 MIME 类型嗅探
+  app.use(helmet.noSniff());
+  // 禁用 HTTP-Powered-By 信息
+  app.use(helmet.hidePoweredBy());
+  // 禁用 DNS 预取
+  app.use(helmet.dnsPrefetchControl({ allow: false }));
 
-// ✅ 允许跨域访问
-app.use(cors({
-  origin: "http://localhost:3000",  // ✅ 允许你的前端地址
-  credentials: true  // ✅ 允许携带 Cookie
-}));
+  app.use(
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'"],         // 只允许同源加载资源
+        scriptSrc: ["'self'"],  // 允许从指定域加载脚本
+        styleSrc: ["'self'"],  // 允许加载同源和内联样式
+        objectSrc: ["'none'"],          // 禁止嵌套对象
+        connectSrc: ["'self'"],         // 只允许从同源请求
+        fontSrc: ["'self'"],            // 只允许加载同源字体
+        frameSrc: ["'none'"],           // 禁止嵌套框架
+        // upgradeInsecureRequests: [],    // 强制将 HTTP 请求升级为 HTTPS
+      },
+    })
+  );
+  
 
-// ✅ 解析请求体
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+};
 
-app.use(logger("dev"));
+// 配置路由
+const configureRoutes = () => {
+  // 认证相关路由
+  app.use('/api/auth', authRouter);
 
-// ✅ 设置 `uploads` 目录为静态文件目录
-const uploadsPath = path.join(__dirname, 'routes', 'uploads');
-console.log(`📂 Serving static files from: ${uploadsPath}`);
-app.use('/uploads', express.static(uploadsPath));
+  // 认证中间件
+  app.use(authToken); // pages below this middleware must be authenticated
 
-// ✅ 绑定 API 路由
-app.use('/auth', authRouter);
-app.use('/api/vendor', vendorRouter);
+  // 登出相关路由
+  app.use('/api/logout', logoutRouter); // only legitimate user can ask for clearing cookies to prevent attacks
+  
+  // 账户相关路由
+  app.use('/api', custAccountRoutes);
+  app.use('/api', vendAccountRoutes);
+  
+  // 订单相关路由
+  app.use("/api/orders", orderRoutes);
+  
+  // 餐厅相关路由
+  app.use('/api', restaurantRoutes);
+  
+  // 供应商相关路由
+  app.use('/api/vendor', vendorRouter);
+};
 
-app.use('/api/logout', logoutRouter);  // ✅ 使用 logout 路由
-app.use('/api', require('./routes/CustAccountBack')); //cust
-app.use('/api', require('./routes/VendAccountBack'));
+// 配置错误处理
+const configureErrorHandling = () => {
+  // 处理404错误
+  app.use((req, res) => {
+    res.status(404).json({ error: "Not Found" });
+  });
+  
+  // 统一错误处理
+  app.use((err, req, res, next) => {
+    console.error("❌ Error:", err.message);
+    res.status(err.status || 500).json({ error: err.message || "Internal Server Error" });
+  });
+};
 
+// 初始化应用
+const initializeApp = () => {
+  configureMiddleware();
+  configureRoutes();
+  configureErrorHandling();
+};
 
-app.use("/api/orders", orderRoutes); 
-
-
-// ✅ 获取所有餐厅（确保这个放在 `/auth` 和 `/vendor` 之后）
-app.get('/api/restaurants', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM public.restaurants');
-    console.log("Fetched restaurants:", result.rows);
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Database error:', err);
-    res.status(500).json({ error: "Error fetching restaurants", details: err.message });
-  }
-});
-
-// ✅ 获取指定餐厅的食品数据
-app.get('/api/foods/:restaurantId', async (req, res) => {
-  const { restaurantId } = req.params;
-  try {
-    const result = await pool.query('SELECT * FROM public.foods WHERE restaurant_id = $1 and is_active = true', [restaurantId] );
-    console.log("Fetched foods for restaurant:", result.rows);
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Database error:', err);
-    res.status(500).json({ error: "Error fetching food data", details: err.message });
-  }
-});
-
-// ✅ 处理 404 错误（确保这个放在最后）
-app.use((req, res) => {
-  res.status(404).json({ error: "Not Found" });
-});
-
-// ✅ 统一错误处理
-app.use((err, req, res, next) => {
-  console.error("❌ Error:", err.message);
-  res.status(err.status || 500).json({ error: err.message || "Internal Server Error" });
-});
+// 执行初始化
+initializeApp();
 
 module.exports = app;

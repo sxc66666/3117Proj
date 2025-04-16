@@ -6,6 +6,9 @@ const pool = require("../db/db");
 router.get("/menu", async (req, res) => {
     try {
         const { restaurant_id } = req.query;  // 🆕 获取前端传过来的 restaurant_id
+
+        // 使用token读取id
+        const restaurantIdFromToken = req.user.id;
         
         if (!restaurant_id) {
             return res.status(400).json({ error: "Missing restaurant_id" });
@@ -14,7 +17,7 @@ router.get("/menu", async (req, res) => {
         console.log("📡 [DEBUG] Fetching menu for restaurant_id:", restaurant_id);
         const result = await pool.query(
             "SELECT * FROM foods WHERE restaurant_id = $1 and is_active = TRUE",
-            [restaurant_id]
+            [restaurantIdFromToken]
         );
 
         console.log("✅ [DEBUG] Fetched menu:", result.rows);
@@ -30,15 +33,18 @@ router.post("/menu", async (req, res) => {
     try {
         const { restaurant_id, name, description, price, image } = req.body;  // 🆕 让前端传递 restaurant_id
         
-        if (!restaurant_id) {
-            return res.status(400).json({ error: "Missing restaurant_id" });
-        }
+        // if (!restaurant_id) {
+        //     return res.status(400).json({ error: "Missing restaurant_id" });
+        // }
+
+        // 使用token读取id
+        const restaurantIdFromToken = req.user.id;
 
         console.log("📡 [DEBUG] Inserting new food:", { restaurant_id, name, description, price, image });
 
         const result = await pool.query(
             "INSERT INTO foods (restaurant_id, name, description, price, image) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [restaurant_id, name, description, price, image]
+            [restaurantIdFromToken, name, description, price, image]
         );
 
         console.log("✅ [DEBUG] Inserted food:", result.rows[0]);
@@ -57,9 +63,12 @@ router.put("/menu/:id", async (req, res) => {
         const { name, description, price, image, id, restaurant_id } = req.body;
         console.log("📡 [DEBUG] Updating food:", req.body);
 
+        // 使用token读取id
+        const restaurantIdFromToken = req.user.id;
+
         const result = await pool.query(
             "UPDATE public.foods SET name=$1, description=$2, price=$3, image=$4 WHERE id=$5 AND restaurant_id=$6 RETURNING *",
-            [name, description, price, image, id, restaurant_id]
+            [name, description, price, image, id, restaurantIdFromToken]
         );
 
         res.json(result.rows[0]);
@@ -74,6 +83,9 @@ router.delete("/menu/:id", async (req, res) => {
         const { id } = req.params;  // 从 URL 参数获取 id
         const { restaurantId } = req.query;  // 获取查询参数
 
+        // 使用token读取id
+        const restaurantIdFromToken = req.user.id;
+
         console.log("📡 [DEBUG] Del food:", { id, restaurantId});
 
         if (!id || !restaurantId) {
@@ -84,7 +96,7 @@ router.delete("/menu/:id", async (req, res) => {
         console.log("📡 [DEBUG] Deleting food item:", restaurantId);
         const result = await pool.query(
             "UPDATE public.foods SET is_active=FALSE WHERE id=$1 AND restaurant_id=$2 RETURNING *",
-            [id, restaurantId]
+            [id, restaurantIdFromToken]
         );
 
         if (result.rowCount === 0) {
@@ -98,8 +110,12 @@ router.delete("/menu/:id", async (req, res) => {
     }
 });
 
+// 怀疑没有使用过 待检查后删除
 router.get("/getRestaurantId", async (req, res) => {
     const { user_id } = req.query;
+
+    // 使用token读取id
+    const restaurantIdFromToken = req.user.id;
 
     if (!user_id) {
         return res.status(400).json({ error: "Missing user_id" });
@@ -108,7 +124,7 @@ router.get("/getRestaurantId", async (req, res) => {
     try {
         console.log("📡 [DEBUG] Fetching restaurant_id for user_id:", user_id);
         
-        const result = await pool.query("SELECT id FROM restaurants WHERE owner_id = $1", [user_id]);
+        const result = await pool.query("SELECT id FROM restaurants WHERE owner_id = $1", [restaurantIdFromToken]);
 
         if (result.rows.length === 0) {
             console.log("❌ [ERROR] No restaurant found for user_id:", user_id);

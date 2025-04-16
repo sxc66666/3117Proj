@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../config/axiosInstance";
 import OrderList from '../components/OrderList';
 import Navbar from '../components/Navbar';
-import { menuLinksCust } from '../config/config';
+import { menuLinksCust } from '../config/navbarConfig';
 import CardContainer from '../components/CardContainer';
 import OrderDetailsPopup from '../components/OrderDetailsPopup';
 
@@ -18,7 +18,7 @@ export default function Orders() {
           return;
         }
 
-        const response = await axios.get(`http://localhost:5000/api/orders/${user.id}`);
+        const response = await axiosInstance.get(`/api/orders/${user.id}`);
 
         console.log("✅ [DEBUG] Fetched orders:", response.data);
         setOrders(response.data);
