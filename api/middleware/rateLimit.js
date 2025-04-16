@@ -8,12 +8,12 @@ dotenv.config();
 // hCaptcha secret key
 const HCAPTCHA_SECRET = process.env.HCAPTCHA_SECRET; 
 
-const MAX_REQUESTS = 20; // 每分钟最大请求数
+const MAX_REQUESTS = 35; // 每5分钟最大请求数
 
 // 配置请求频率限制
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1分钟
-  max: MAX_REQUESTS, // 每个 IP 最多请求 30 次
+  windowMs: 60 * 1000 * 5, // 5分钟
+  max: MAX_REQUESTS,
   message: { message: 'Too many requests, please verify yourself' },
 });
 
