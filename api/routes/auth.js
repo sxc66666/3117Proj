@@ -13,7 +13,6 @@ const router = express.Router();
 
 // 修改上传目录的路径
 const uploadsDir = path.join(__dirname, '..', 'uploads');
-const baseURL = "http://localhost:5000/uploads/";
 
 
 // 确保 uploads 目录存在，如果没有则创建它

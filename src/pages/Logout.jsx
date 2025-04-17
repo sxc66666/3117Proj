@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from '../components/useAuthStore';
 import axiosInstance from "../config/axiosInstance";
 
+const API_DOMAIN = process.env.REACT_APP_API_DOMAIN; // read from .env file
+if (!API_DOMAIN) {
+  throw new Error('REACT_APP_API_DOMAIN is not defined in .env file');
+}
+
 const Logout = () => {
   const navigate = useNavigate();
   const { user, clearUser } = useAuthStore();
@@ -22,8 +27,8 @@ const Logout = () => {
   
     // 清除所有认证相关的信息
     // 清除cookie，需要设置相同的domain和path
-    document.cookie = "user_id=; path=/; domain=localhost; max-age=-1";
-    document.cookie = "auth_token=; path=/; domain=localhost; max-age=-1";
+    document.cookie = `user_id=; path=/; domain=${API_DOMAIN}; max-age=-1`;
+    document.cookie = `auth_token=; path=/; domain=${API_DOMAIN}; max-age=-1`;
     localStorage.clear();
     sessionStorage.clear();
     clearUser();

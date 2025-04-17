@@ -2,8 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require('helmet');
 const cookieParser = require("cookie-parser");
-const logger = require("morgan");
 const path = require("path");
+
+const dotenv = require("dotenv");
+dotenv.config();
+
+const FRONTEND_URL = process.env.FRONTEND_URL;
+if (!FRONTEND_URL) {
+  throw new Error('FRONTEND_URL is not defined in .env file');
+}
 
 // 导入路由
 const authRouter = require("./routes/auth");
@@ -32,7 +39,7 @@ const configureMiddleware = () => {
   
   // 配置CORS
   app.use(cors({
-    origin: "http://localhost:3000",
+    origin: FRONTEND_URL,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
