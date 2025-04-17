@@ -9,9 +9,12 @@ const pool = require("../db/db");
 const validate = require('../middleware/validate');
 const orderSchema = require('../validators/orderSchema');
 
+// Authorize
+const authorize = require('../middleware/authorize');
+
 // ✅ 顾客下单
 // 顾客下单
-router.post("/", validate(orderSchema), async (req, res) => {
+router.post("/", validate(orderSchema), authorize(['consumer']), async (req, res) => {
     try {
         const { restaurant_id, total_price, items } = req.body;
         console.log("Received order data:", req.body);  // 打印接收到的数据

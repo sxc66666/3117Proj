@@ -5,8 +5,10 @@ const pool = require('../db/db');
 const validate = require('../middleware/validate');
 const { getFoodsByRestaurantSchema } = require('../validators/restaurantSchema');
 
+const authorize = require('../middleware/authorize');
+
 // 获取所有餐厅
-router.get('/restaurants', async (req, res) => {
+router.get('/restaurants', authorize(['consumer']), async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM public.restaurants');
     console.log("Fetched restaurants:", result.rows);
@@ -18,7 +20,7 @@ router.get('/restaurants', async (req, res) => {
 });
 
 // 获取指定餐厅的食品数据
-router.get('/foods/:restaurantId', validate(getFoodsByRestaurantSchema), async (req, res) => {
+router.get('/foods/:restaurantId', authorize(['consumer']), validate(getFoodsByRestaurantSchema), async (req, res) => {
   const { restaurantId } = req.params;
   try {
     const result = await pool.query('SELECT * FROM public.foods WHERE restaurant_id = $1 and is_active = true', [restaurantId]);
