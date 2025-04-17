@@ -59,72 +59,82 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/:user_id", async (req, res) => {
-    // 获取用户 ID
-    const { user_id } = req.params;
+    try {
+        const idFromToken = req.user.id;
 
-    // 使用token读取id
-    const idFromToken = req.user.id;
-
-    // 在数据库中查询该用户type，是“consumer”还是“restaurant”
-    const user = await pool.query("SELECT type FROM users WHERE id = $1", [idFromToken]);
-    // 如果用户不存在
-    if (user.rows.length === 0) {
-        return res.status(404).json({ error: "User not found" });
-    }
-    // 如果用户是顾客
-    if (user.rows[0].type === "consumer") {
-        // 查询顾客的订单
-        const ordersResult = await pool.query(
-            `SELECT o.id, o.total_price, o.created_at, r.name AS restaurant_name
-             FROM orders o
-             JOIN restaurants r ON o.restaurant_id = r.id
-             WHERE o.user_id = $1
-             ORDER BY o.created_at DESC`,
-            [idFromToken]
-        );
-        const orders = ordersResult.rows;
-        // 获取每个订单的 items
-        for (let order of orders) {
-            const itemsResult = await pool.query(
-                `SELECT f.name, oi.quantity, f.price
-                 FROM order_items oi
-                 JOIN foods f ON oi.food_id = f.id
-                 WHERE oi.order_id = $1` ,
-                [order.id]
-            );
-
-
-            
-            order.items = itemsResult.rows;
+        // 查询用户类型
+        const user = await pool.query("SELECT type FROM users WHERE id = $1", [idFromToken]);
+        if (user.rows.length === 0) {
+            return res.status(404).json({ error: "User not found" });
         }
-        res.json(orders);
-    } else if (user.rows[0].type === "restaurant") {
-        // 如果用户是商家
-        // 查询商家的订单
-        const ordersResult = await pool.query(
-            `SELECT o.id, o.total_price, o.created_at, u.nick_name AS customer_name
-             FROM orders o
-             JOIN users u ON o.user_id = u.id
-             WHERE o.restaurant_id = $1
-             ORDER BY o.created_at DESC`,
-            [idFromToken]
-        );
-        const orders = ordersResult.rows;
-        // 获取每个订单的 items
-        for (let order of orders) {
-            const itemsResult = await pool.query(
-                `SELECT f.name, oi.quantity, f.price
-                 FROM order_items oi
-                 JOIN foods f ON oi.food_id = f.id
-                 WHERE oi.order_id = $1` ,
-                [order.id]
-            );
 
-            order.items = itemsResult.rows;
+        let ordersResult;
+        if (user.rows[0].type === "consumer") {
+            // 查询顾客的订单
+            ordersResult = await pool.query(
+                `SELECT o.id, o.total_price, o.created_at, r.name AS restaurant_name
+                 FROM orders o
+                 JOIN restaurants r ON o.restaurant_id = r.id
+                 WHERE o.user_id = $1
+                 ORDER BY o.created_at DESC`,
+                [idFromToken]
+            );
+        } else if (user.rows[0].type === "restaurant") {
+            // 查询商家的订单
+            ordersResult = await pool.query(
+                `SELECT o.id, o.total_price, o.created_at, u.nick_name AS customer_name
+                 FROM orders o
+                 JOIN users u ON o.user_id = u.id
+                 WHERE o.restaurant_id = $1
+                 ORDER BY o.created_at DESC`,
+                [idFromToken]
+            );
+        } else {
+            return res.status(400).json({ error: "Unknown user type" });
         }
+
+        const orders = ordersResult.rows;
+        if (orders.length === 0) {
+            return res.json([]); // 没有订单直接返回空数组
+        }
+
+        // 提取所有 order_id
+        const orderIds = orders.map(order => order.id);
+
+        // 查询所有订单的 items
+        const itemsResult = await pool.query(
+            `SELECT oi.order_id, f.name, oi.quantity, f.price
+             FROM order_items oi
+             JOIN foods f ON oi.food_id = f.id
+             WHERE oi.order_id = ANY($1::int[])`,
+            [orderIds]
+        );
+
+        // 构建 order_id -> items 的映射
+        const itemsMap = {};
+        itemsResult.rows.forEach(item => {
+            if (!itemsMap[item.order_id]) {
+                itemsMap[item.order_id] = [];
+            }
+            itemsMap[item.order_id].push({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price
+            });
+        });
+
+        // 为每个订单添加 items 属性
+        orders.forEach(order => {
+            order.items = itemsMap[order.id] || [];
+        });
+
         res.json(orders);
+    } catch (error) {
+        console.error("❌ [ERROR] Failed to fetch orders:", error.message);
+        res.status(500).json({ error: "Database error", details: error.message });
     }
 });
+
 
 
 module.exports = router;
