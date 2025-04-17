@@ -1,5 +1,13 @@
+// 图片逻辑还需debug
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../config/axiosInstance";
+
+const API_URL = process.env.REACT_APP_API_URL; // read from .env file
+if (!API_URL) {
+  throw new Error('REACT_APP_API_URL is not defined in .env file');
+}
 
 const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
   const [user, setUser] = useState(null);
@@ -14,7 +22,7 @@ const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
 
       if (parsedUser.profile_image?.startsWith("F:\\")) {
         const filename = parsedUser.profile_image.split("\\").pop();
-        parsedUser.profile_image = `http://localhost:5000/uploads/${filename}`;
+        parsedUser.profile_image = `${API_URL}/uploads/${filename}`;
       }
 
       const initialFormData = { ...parsedUser, password: "" };
@@ -35,18 +43,12 @@ const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
   const handleSave = async () => {
     const updatedUser = { ...user, ...formData };
     if (!formData.password) delete updatedUser.password;
-
+  
     try {
-      const response = await fetch(apiEndpoint, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedUser),
-      });
-
-      if (!response.ok) throw new Error("Update failed");
-
-      const result = await response.json();
+      const response = await axiosInstance.put(apiEndpoint, updatedUser);
+  
       alert("User information updated successfully!");
+      const result = response.data;
       setUser(result.user);
       localStorage.setItem("user", JSON.stringify(result.user));
       setEditMode(false);

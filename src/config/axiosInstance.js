@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL // read from .env file
+if (!API_URL) {
+  throw new Error('REACT_APP_API_URL is not defined in .env file');
+}
+
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000',  // 设置基础URL
+  baseURL: API_URL,  // 设置基础URL
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json' // default header

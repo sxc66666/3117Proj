@@ -5,7 +5,7 @@ const VendAccount = () => {
   return (
     <UserAccount
       userType="vend"
-      apiEndpoint="http://localhost:5000/api/Vend/update-Venduser"
+      apiEndpoint="/api/Vend/update-Venduser"
       fields={["description"]}
     />
   );

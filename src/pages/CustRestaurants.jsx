@@ -13,7 +13,7 @@ export default function CustRestaurant() {
 
   useEffect(() => {
     // 请求后端 API 获取餐厅数据
-    axiosInstance.get('http://localhost:5000/api/restaurants')  // 假设你的后端在 localhost:5000
+    axiosInstance.get('/api/restaurants')
       .then((response) => {
         console.log("Fetched restaurants:", response.data);  // 打印获取的餐厅数据
         setRestaurants(response.data);  // 将获取的数据存储到状态中
