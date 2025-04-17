@@ -1,6 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from '../components/useAuthStore';
+import axiosInstance from "../config/axiosInstance";
+
+const API_DOMAIN = process.env.REACT_APP_API_DOMAIN; // read from .env file
+if (!API_DOMAIN) {
+  throw new Error('REACT_APP_API_DOMAIN is not defined in .env file');
+}
 
 const Logout = () => {
   const navigate = useNavigate();
@@ -8,30 +14,21 @@ const Logout = () => {
 
   const handleLogout = async () => {
     console.log("🔵 handleLogout clicked"); // 确保函数被调用
-
+  
     try {
       console.log("🔵 Sending logout request for user ID:", user.id);
-
-      const response = await fetch("http://localhost:5000/api/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: user.id }),
-        credentials: "include",  // ✅ 允许携带 Cookie
-      });
-
-      const data = await response.json();
-      console.log("🟢 Logout response:", data);
-
+  
+      const response = await axiosInstance.post("/api/logout", { id: user.id }, { withCredentials: true });
+  
+      console.log("🟢 Logout response:", response.data);
     } catch (error) {
       console.error("❌ Failed to update last_login:", error);
     }
-
+  
     // 清除所有认证相关的信息
     // 清除cookie，需要设置相同的domain和path
-    document.cookie = "user_id=; path=/; domain=localhost; max-age=-1";
-    document.cookie = "auth_token=; path=/; domain=localhost; max-age=-1";
+    document.cookie = `user_id=; path=/; domain=${API_DOMAIN}; max-age=-1`;
+    document.cookie = `auth_token=; path=/; domain=${API_DOMAIN}; max-age=-1`;
     localStorage.clear();
     sessionStorage.clear();
     clearUser();

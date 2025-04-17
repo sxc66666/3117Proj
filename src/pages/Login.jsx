@@ -3,6 +3,7 @@ import axiosInstance from '../config/axiosInstance';
 import useAuthStore from '../components/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import FormInput from "../components/FormInput";
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 // 密码强度指示器组件
 const PasswordStrengthIndicator = ({ password }) => {
@@ -147,8 +148,8 @@ export default function Auth() {
     }
 
     const url = isRegister
-      ? "http://localhost:5000/api/auth/register"
-      : "http://localhost:5000/api/auth/login";
+      ? "/api/auth/register"
+      : "/api/auth/login";
 
     try {
       let response;

@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL // read from .env file
+if (!API_URL) {
+  throw new Error('REACT_APP_API_URL is not defined in .env file');
+}
+
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000',  // 设置基础URL
+  baseURL: API_URL,  // 设置基础URL
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json' // default header
@@ -31,6 +36,12 @@ axiosInstance.interceptors.response.use(
     // 对响应错误做点什么
     // 如果错误是401，则清除cookie（httponly）// 需要https才安全 否则任何人都可假冒401清除cookie
     // To be finished
+    // 如果错误是429，则跳转到验证码页面
+    if (error.response && error.response.status === 429) {
+      console.log('Too many requests, redirecting to captcha page...');
+      // Redirect to captcha page “/hcaptcha”
+      window.location.href = '/hcaptcha'; // 使用window.location.href进行重定向      
+    }
     return Promise.reject(error);
   }
 );
