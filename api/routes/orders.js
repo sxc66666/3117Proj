@@ -1,5 +1,5 @@
 // 用token内userid替换现有读取id逻辑    Done
-// 去掉读取前端直接返回id逻辑           X
+// 去掉读取前端直接返回id逻辑           Done
 
 const express = require("express");
 const router = express.Router();
@@ -9,13 +9,14 @@ const pool = require("../db/db");
 // 顾客下单
 router.post("/", async (req, res) => {
     try {
-        const { user_id, restaurant_id, total_price, items } = req.body;
+        const { restaurant_id, total_price, items } = req.body;
         console.log("Received order data:", req.body);  // 打印接收到的数据
 
-        // 数据验证
-        if (!user_id || !restaurant_id || !total_price || !items || items.length === 0) {
-            return res.status(400).json({ error: "Invalid order data" });
-        }
+        // 以弃用 将使用express-validator进行数据验证
+        // // 数据验证
+        // if (!user_id || !restaurant_id || !total_price || !items || items.length === 0) {
+        //     return res.status(400).json({ error: "Invalid order data" });
+        // }
 
         // 使用token读取id
         const idFromToken = req.user.id;
