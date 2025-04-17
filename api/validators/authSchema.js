@@ -9,15 +9,15 @@ const registerSchema = [
 
   body('password')
     .isString().withMessage('密码必须是字符串')
-    .notEmpty().withMessage('密码不能为空')
-    .isLength({ min: 8 }).withMessage('密码长度不能小于8位'),
+    .notEmpty().withMessage('密码不能为空'),
 
   body('nick_name')
     .isString().withMessage('昵称必须是字符串')
     .notEmpty().withMessage('昵称不能为空'),
 
   body('email')
-    .isEmail().withMessage('无效的邮箱格式'),
+    .isString().withMessage('应为字符串')
+    .notEmpty().withMessage('不能为空'),
 
   body('type')
     .isIn(['consumer', 'restaurant']).withMessage('用户类型必须为 consumer 或 restaurant'),
