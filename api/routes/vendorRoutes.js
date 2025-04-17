@@ -5,6 +5,13 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db/db");
 
+const validate = require('../middleware/validate');
+const {
+  addMenuItemSchema,
+  updateMenuItemSchema,
+  deleteMenuItemSchema
+} = require('../validators/menuSchema');
+
 // ✅ 获取商家菜单（基于 restaurant_id）
 router.get("/menu", async (req, res) => {
     try {
@@ -35,7 +42,7 @@ router.get("/menu", async (req, res) => {
 });
 
 // ✅ 添加新菜品
-router.post("/menu", async (req, res) => {
+router.post("/menu", validate(addMenuItemSchema), async (req, res) => {
     try {
         const { name, description, price, image } = req.body;  // 🆕 让前端传递 restaurant_id
         
@@ -67,7 +74,7 @@ router.post("/menu", async (req, res) => {
 
 
 // ✅ 更新菜品
-router.put("/menu/:id", async (req, res) => {
+router.put("/menu/:id", validate(updateMenuItemSchema), async (req, res) => {
     try {
         const { name, description, price, image, id } = req.body;
         console.log("📡 [DEBUG] Updating food:", req.body);
@@ -87,7 +94,7 @@ router.put("/menu/:id", async (req, res) => {
 });
 
 // ✅ 删除菜品
-router.delete("/menu/:id", async (req, res) => {
+router.delete("/menu/:id", validate(deleteMenuItemSchema), async (req, res) => {
     try {
         const { id } = req.params;  // 从 URL 参数获取 id
         // const { restaurantId } = req.query;  // 获取查询参数

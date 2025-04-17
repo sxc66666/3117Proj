@@ -5,9 +5,13 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db/db");
 
+// Validators
+const validate = require('../middleware/validate');
+const orderSchema = require('../validators/orderSchema');
+
 // ✅ 顾客下单
 // 顾客下单
-router.post("/", async (req, res) => {
+router.post("/", validate(orderSchema), async (req, res) => {
     try {
         const { restaurant_id, total_price, items } = req.body;
         console.log("Received order data:", req.body);  // 打印接收到的数据
