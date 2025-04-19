@@ -49,7 +49,6 @@ export default function CustCheckout() {
             console.log('Restaurant ID:', restaurantId);
     
             const orderData = {
-                user_id: user.id,
                 restaurant_id: Number(restaurantId),  // Ensure this is included in the payload as a number
                 total_price: totalPrice,
                 items: selectedFoods.map(item => ({
