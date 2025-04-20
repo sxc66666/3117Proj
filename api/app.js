@@ -21,6 +21,7 @@ const custAccountRoutes = require("./routes/CustAccountBack");
 const vendAccountRoutes = require("./routes/VendAccountBack");
 const restaurantRoutes = require("./routes/restaurantFood");
 const verifyCaptchaRouter = require("./routes/verifyCaptcha");
+const profileImageRouter = require("./routes/profileImage");
 
 // 导入中间件
 const authToken = require("./middleware/authToken");
@@ -101,6 +102,9 @@ const configureRoutes = () => {
 
   // 认证中间件
   app.use(authToken); // pages below this middleware must be authenticated
+
+  // 头像上传路由
+  app.use('/api/profile_image', profileImageRouter); // 头像上传路由
 
   // 登出相关路由
   app.use('/api/logout', logoutRouter); // only legitimate user can ask for clearing cookies to prevent attacks

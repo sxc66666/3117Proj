@@ -11,6 +11,7 @@ import Logout from "./pages/Logout";  // 引入 Logout 页面
 import CustComplete from "./pages/CustComplete";
 import Orders from "./pages/Orders";
 import VendMenu from "./pages/VendMenu";
+import UploadAvatar from "./pages/UploadAvatar"; // 引入 UploadAvatar 页面
 
 import HCaptchaPopup from "./components/HCaptchaPopup"; // 引入 HCaptcha 组件
 
@@ -43,6 +44,7 @@ const App = () => {
 
         {/* Shared routes */}
         <Route path="/orders" element={<Orders />} />
+        <Route path="/upload-avatar" element={<UploadAvatar />} />
 
         {/* HCaptcha related routes */}
         <Route

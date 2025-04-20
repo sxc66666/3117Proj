@@ -64,9 +64,8 @@ const validatePasswordStrength = (password) => {
 };
 
 // ✅ 用户注册 API
-router.post("/register", upload.single("profile_image"), validate(registerSchema), async (req, res) => {
+router.post("/register", async (req, res) => {
   const { login_id, password, nick_name, email, type } = req.body;
-  const profile_image = req.file ? req.file.path : null;
 
   try {
     // 验证密码强度
@@ -89,14 +88,14 @@ router.post("/register", upload.single("profile_image"), validate(registerSchema
 
     // 插入新用户
     const result = await pool.query(
-      "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-      [login_id, hashedPassword, nick_name, email, type, profile_image]
+      "INSERT INTO users (login_id, password, nick_name, email, type) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [login_id, hashedPassword, nick_name, email, type]
     );
 
     if (type === "restaurant") {
       await pool.query(
-        "INSERT INTO restaurants (name, image, id) VALUES ($1, $2, (SELECT id FROM users WHERE login_id = $3))",
-        [nick_name, profile_image, login_id]
+        "INSERT INTO restaurants (name, image, id) VALUES ($1, null, (SELECT id FROM users WHERE login_id = $2))",
+        [nick_name, login_id] // 需要处理新建用户如果是商家类型，但是自己上传头像没加进来image为null的时候从users表读取
       );
     }
 
