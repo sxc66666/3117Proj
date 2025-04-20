@@ -10,29 +10,30 @@ export default function VendorMenu() {
     const [menu, setMenu] = useState([]);  // 存储菜单
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [restaurantId, setRestaurantId] = useState(null);
+    // const [restaurantId, setRestaurantId] = useState(null);
     const [editingFood, setEditingFood] = useState(null); // 🆕 编辑菜品状态
 
-    // ✅ 获取当前用户的 restaurantId
-    useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (user && user.id) {
-            console.log("📡 [DEBUG] Current user data:", user);
-            setRestaurantId(user.id);
-        } else {
-            console.error("❌ [ERROR] No user data found.");
-            setError("User not found");
-        }
-    }, []);
+    // // ✅ 获取当前用户的 restaurantId
+    // useEffect(() => {
+    //     const user = JSON.parse(localStorage.getItem("user"));
+    //     if (user && user.id) {
+    //         console.log("📡 [DEBUG] Current user data:", user);
+    //         setRestaurantId(user.id);
+    //     } else {
+    //         console.error("❌ [ERROR] No user data found.");
+    //         setError("User not found");
+    //     }
+    // }, []);
 
-    // ✅ 获取菜单数据（当 restaurantId 变更时）
+    //✅ 获取菜单数据（当 restaurantId 变更时）
+    const restaurantId = 1; // 占位符，无意义
     useEffect(() => {
         if (!restaurantId) return; // 只有在 restaurantId 存在时才获取数据
 
         const fetchMenu = async () => {
             setLoading(true);
             try {
-                const response = await axiosInstance.get(`/api/vendor/menu?restaurant_id=${restaurantId}`);
+                const response = await axiosInstance.get(`/api/vendor/menu`);
                 console.log("📡 [DEBUG] Fetched menu:", response.data);
                 setMenu(response.data);
             } catch (err) {
@@ -48,17 +49,16 @@ export default function VendorMenu() {
 
     // ✅ 添加新菜品
     const handleAddNewFood = async () => {
-        if (!restaurantId) {
-            console.error("❌ [ERROR] No restaurant ID found.");
-            return;
-        }
+        // if (!restaurantId) {
+        //     console.error("❌ [ERROR] No restaurant ID found.");
+        //     return;
+        // }
 
         const newFood = {
-            restaurant_id: restaurantId,
             name: "New Dish",
             description: "Delicious new item",
             price: 10.99,
-            image: "https://via.placeholder.com/150",  // 默认图片
+            image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",  // 默认图片
         };
 
         try {
@@ -98,7 +98,7 @@ export default function VendorMenu() {
     const handleDeleteFood = async (foodId) => {
         try {
             console.log("📡 [DEBUG] Deleting food:", foodId);
-            await axiosInstance.delete(`/api/vendor/menu/${foodId}?restaurantId=${restaurantId}`);
+            await axiosInstance.delete(`/api/vendor/menu/${foodId}`);
             console.log("✅ [DEBUG] Food deleted");
             setMenu((prevMenu) => prevMenu.filter((food) => food.id !== foodId));
         } catch (err) {

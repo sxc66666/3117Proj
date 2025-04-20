@@ -4,10 +4,18 @@ const pool = require("../db/db");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const SALT_ROUNDS = 10;
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv');
 dotenv.config();
+
+// Valdators
+const validate = require('../middleware/validate');
+const { registerSchema, loginSchema } = require('../validators/authSchema');
+
+const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS); // 使用 parseInt 将字符串转换为整数
+if (!SALT_ROUNDS) {
+  throw new Error('SALT_ROUNDS is not defined in .env file');
+}
 
 const router = express.Router();
 
@@ -56,7 +64,7 @@ const validatePasswordStrength = (password) => {
 };
 
 // ✅ 用户注册 API
-router.post("/register", upload.single("profile_image"), async (req, res) => {
+router.post("/register", upload.single("profile_image"), validate(registerSchema), async (req, res) => {
   const { login_id, password, nick_name, email, type } = req.body;
   const profile_image = req.file ? req.file.path : null;
 
@@ -103,7 +111,7 @@ router.post("/register", upload.single("profile_image"), async (req, res) => {
 });
 
 // ✅ 用户登录 API
-router.post("/login", async (req, res) => {
+router.post("/login", validate(loginSchema), async (req, res) => {
   const { login_id, password } = req.body;
 
   console.log("Received login request:", req.body);

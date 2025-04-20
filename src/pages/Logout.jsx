@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import useAuthStore from '../components/useAuthStore';
 import axiosInstance from "../config/axiosInstance";
 
 const API_DOMAIN = process.env.REACT_APP_API_DOMAIN; // read from .env file
@@ -10,15 +9,13 @@ if (!API_DOMAIN) {
 
 const Logout = () => {
   const navigate = useNavigate();
-  const { user, clearUser } = useAuthStore();
 
   const handleLogout = async () => {
     console.log("🔵 handleLogout clicked"); // 确保函数被调用
   
     try {
-      console.log("🔵 Sending logout request for user ID:", user.id);
   
-      const response = await axiosInstance.post("/api/logout", { id: user.id }, { withCredentials: true });
+      const response = await axiosInstance.post("/api/logout");
   
       console.log("🟢 Logout response:", response.data);
     } catch (error) {
@@ -31,7 +28,6 @@ const Logout = () => {
     document.cookie = `auth_token=; path=/; domain=${API_DOMAIN}; max-age=-1`;
     localStorage.clear();
     sessionStorage.clear();
-    clearUser();
     navigate("/");
   };
 
