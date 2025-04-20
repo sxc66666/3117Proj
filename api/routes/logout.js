@@ -1,5 +1,5 @@
 // 用token内userid替换现有读取id逻辑    Done
-// 去掉读取前端直接返回id逻辑           X
+// 去掉读取前端直接返回id逻辑           Done
 
 const express = require("express");
 const pool = require("../db/db");
@@ -11,9 +11,6 @@ dotenv.config();
 router.post("/", async (req, res) => {
 
     console.log("Received request to logout user:", req.body);
-    // 已弃用
-    //const { id } = req.body;
-    //console.log("User ID:", id);
 
     // 使用token读取id
     const idFromToken = req.user.id;

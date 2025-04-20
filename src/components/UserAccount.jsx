@@ -16,23 +16,31 @@ const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
+    const fetchUser = async () => {
+      try {
+        const response = await axiosInstance.get("/api/getUser");
+        const fetchedUser = response.data.user;
+        console.log("Fetched user data:", fetchedUser);
 
-      if (parsedUser.profile_image?.startsWith("F:\\")) {
-        const filename = parsedUser.profile_image.split("\\").pop();
-        parsedUser.profile_image = `${API_URL}/uploads/${filename}`;
+        if (fetchedUser.profile_image?.startsWith("F:\\")) {
+          const filename = fetchedUser.profile_image.split("\\").pop();
+          fetchedUser.profile_image = `${API_URL}/uploads/${filename}`;
+        }
+
+        const initialFormData = { ...fetchedUser, password: "" };
+        fields.forEach(field => {
+          if (!(field in initialFormData)) initialFormData[field] = "";
+        });
+
+        setUser(fetchedUser);
+        setFormData(initialFormData);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        alert("Failed to fetch user data. Please try again.");
       }
+    };
 
-      const initialFormData = { ...parsedUser, password: "" };
-      fields.forEach(field => {
-        if (!(field in initialFormData)) initialFormData[field] = "";
-      });
-
-      setUser(parsedUser);
-      setFormData(initialFormData);
-    }
+    fetchUser();
   }, [fields]);
 
   const handleChange = (e) => {
@@ -50,7 +58,6 @@ const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
       alert("User information updated successfully!");
       const result = response.data;
       setUser(result.user);
-      localStorage.setItem("user", JSON.stringify(result.user));
       setEditMode(false);
     } catch (err) {
       console.error("Error updating user:", err);
