@@ -64,7 +64,7 @@ const validatePasswordStrength = (password) => {
 };
 
 // ✅ 用户注册 API
-router.post("/register", async (req, res) => {
+router.post("/register", validate(registerSchema) ,async (req, res) => {
   const { login_id, password, nick_name, email, type } = req.body;
 
   try {

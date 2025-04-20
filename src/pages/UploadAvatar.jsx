@@ -11,7 +11,7 @@ export default function UploadAvatar() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      setMessage("请选择一张图片");
+      setMessage("Please select an image");
       return;
     }
 
@@ -23,21 +23,21 @@ export default function UploadAvatar() {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true, // 确保 JWT cookie 发送
+        withCredentials: true, // Ensure JWT cookie is sent
       });
 
-      setMessage("上传成功！");
-      // 头像上传成功后跳转，比如首页或个人信息页
+      setMessage("Upload successful!");
+      // Redirect after successful upload, e.g., to the homepage or profile page
       setTimeout(() => navigate("/"), 1000);
     } catch (error) {
-      setMessage(error.response?.data?.error || "上传失败");
+      setMessage(error.response?.data?.error || "Upload failed");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-md w-96">
-        <h2 className="text-lg font-semibold mb-4 text-center">上传头像</h2>
+        <h2 className="text-lg font-semibold mb-4 text-center">Please upload a new avatar</h2>
         {message && <div className="text-center text-red-500 mb-4">{message}</div>}
         <form onSubmit={handleSubmit}>
           <input
@@ -51,7 +51,7 @@ export default function UploadAvatar() {
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
           >
-            上传头像
+            Upload Avatar
           </button>
         </form>
       </div>
