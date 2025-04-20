@@ -163,6 +163,7 @@ export default function Auth() {
         formData.append("email", email);
         formData.append("type", type);
         formData.append("profile_image", profileImage);
+        console.log("Register request data:", formData);
 
         response = await axiosInstance.post(url, formData, {
           headers: { "Content-Type": "multipart/form-data" },

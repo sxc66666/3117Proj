@@ -34,6 +34,9 @@ const app = express();
 
 // 配置中间件
 const configureMiddleware = () => {
+  // 信任特定的代理（如 Nginx 的本地代理）
+  app.set('trust proxy', 'loopback'); // 仅信任本地代理（如 127.0.0.1 和 ::1）
+
   // 启用cookie解析
   app.use(cookieParser());
   

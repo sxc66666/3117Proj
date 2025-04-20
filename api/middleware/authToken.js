@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
+  //临时加一下
+  if (req.path === "/api/auth/register") {
+    return next(); // 跳过验证
+  }
   // 从 cookie 中获取 token
   const token = req.cookies.auth_token;
 

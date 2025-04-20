@@ -1,6 +1,6 @@
-const { Pool } = require("pg");
+const { Pool, Client } = require("pg");
 const dotenv = require('dotenv');
-const pool = require('./db');
+dotenv.config();
 
 // 创建表格的 SQL 语句
 const createTableQuery = `
@@ -31,18 +31,17 @@ const createTableQuery = `
   ('vendor2', 'test1234', 'vendor2@mail.com', 'SushiOwner', 'restaurant'),
   ('vendor3', 'test1234', 'vendor3@mail.com', 'BurgerOwner', 'restaurant');
 
-
   INSERT INTO users (login_id, password, email, nick_name, type) VALUES
   ('consumer1', 'test1234', 'consumer1@mail.com', 'Alice', 'consumer'),
   ('consumer2', 'test1234', 'comsumer2@mail.com', 'Bob', 'consumer');
 
   -- 创建餐厅表
-CREATE TABLE restaurants (
+  CREATE TABLE restaurants (
     id INT NOT NULL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     image VARCHAR(255)
-);
+  );
 
   -- 预先插入餐厅数据，并正确绑定 owner_id
   INSERT INTO restaurants (name, description, image, id) VALUES
@@ -91,8 +90,50 @@ CREATE TABLE restaurants (
   );
 `;
 
+// 检查并创建数据库的函数
+async function ensureDatabaseExists() {
+  const defaultClient = new Client({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+    database: "postgres", // 默认连接到 postgres 数据库
+  });
+
+  try {
+    await defaultClient.connect();
+    console.log("Connected to default database");
+
+    const dbName = process.env.DB_NAME || "food_ordering_system";
+    const checkDbQuery = `SELECT 1 FROM pg_database WHERE datname = $1`;
+    const result = await defaultClient.query(checkDbQuery, [dbName]);
+
+    if (result.rowCount === 0) {
+      console.log(`Database "${dbName}" does not exist. Creating...`);
+      await defaultClient.query(`CREATE DATABASE ${dbName}`);
+      console.log(`Database "${dbName}" created successfully.`);
+    } else {
+      console.log(`Database "${dbName}" already exists.`);
+    }
+  } catch (error) {
+    console.error("Error ensuring database exists:", error);
+  } finally {
+    await defaultClient.end();
+  }
+}
+
 // 执行创建表的异步函数
 async function createTable() {
+  await ensureDatabaseExists(); // 确保数据库存在
+
+  const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME || "food_ordering_system",
+  });
+
   try {
     console.log("Connecting to database...");
     const client = await pool.connect();
@@ -102,6 +143,8 @@ async function createTable() {
     client.release();
   } catch (error) {
     console.error("Error creating table:", error);
+  } finally {
+    await pool.end();
   }
 }
 
