@@ -53,6 +53,8 @@ axiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 403) {
       console.warn('[CSRF] Token might be invalid, will refetch on next request');
       csrfToken = null;
+      // refresh page
+      window.location.reload();
     }
 
     // 限流跳转验证码页
