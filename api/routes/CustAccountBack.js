@@ -73,26 +73,4 @@ router.put("/cust/update-Custuser", async (req, res) => {
   }
 });
 
-router.get("/getUser", async (req, res) => {
-  // api返回token里的user object
-  pool.query("SELECT * FROM users WHERE id = $1", [req.user.id], (err, result) => {
-    if (err) {
-      console.error("获取用户信息失败:", err);
-      return res.status(500).json({ message: "服务器错误" });
-    }
-
-    // 如果没有找到该用户，返回 404
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "用户不存在" });
-    }
-
-    const user = result.rows[0];
-
-    // 返回用户信息
-    res.json({ message: "获取用户信息成功", user });
-  }
-  );
-}
-);
-
 module.exports = router;

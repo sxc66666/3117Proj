@@ -22,6 +22,7 @@ const vendAccountRoutes = require("./routes/VendAccountBack");
 const restaurantRoutes = require("./routes/restaurantFood");
 const verifyCaptchaRouter = require("./routes/verifyCaptcha");
 const profileImageRouter = require("./routes/profileImage");
+const userRouter = require("./routes/user");
 
 // 导入中间件
 const authToken = require("./middleware/authToken");
@@ -112,6 +113,7 @@ const configureRoutes = () => {
   // 账户相关路由
   app.use('/api', custAccountRoutes);
   app.use('/api', vendAccountRoutes);
+  app.use('/api', userRouter); // 账户相关路由
   
   // 订单相关路由
   app.use("/api/orders", orderRoutes);
