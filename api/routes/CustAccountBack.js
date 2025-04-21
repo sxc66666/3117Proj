@@ -1,6 +1,5 @@
 // 用token内userid替换现有读取id逻辑    Done
 // 去掉读取前端直接返回id逻辑           Done
-// 增加用户图片返回api                  X
 
 const express = require("express");
 const pool = require("../db/db"); // 连接 PostgreSQL 的 db.js
@@ -9,12 +8,15 @@ const bcrypt = require("bcrypt"); // 用于密码加密
 const dotenv = require("dotenv");
 dotenv.config(); // 加载环境变量
 
+const { updateCustUserSchema } = require('../validators/accountSchema');
+const validate = require('../middleware/validate');
+
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS);
 
 // 更新用户信息 API
-router.put("/cust/update-Custuser", async (req, res) => {
+router.put("/cust/update-Custuser", validate(updateCustUserSchema), async (req, res) => {
   console.log("📥 收到客户账户更新请求:", req.body);
-  const { email, nick_name, type, profile_image, password } = req.body;
+  const { email, nick_name, type, profile_image } = req.body;
 
   // 已弃用 使用token读取id
   // // 检查是否提供了用户 ID
@@ -41,15 +43,15 @@ router.put("/cust/update-Custuser", async (req, res) => {
     const updatedNickName = nick_name || user.nick_name;
     const updatedType = type || user.type;
     const updatedProfileImage = profile_image || user.profile_image;
-    const updatedPassword = password ? password : user.password; // 如果提供了新密码，则更新
+    //const updatedPassword = password ? password : user.password; // 如果提供了新密码，则更新
 
-    const hashedPassword = await bcrypt.hash(updatedPassword, SALT_ROUNDS); // 使用 bcrypt 加密密码
+    //const hashedPassword = await bcrypt.hash(updatedPassword, SALT_ROUNDS); // 使用 bcrypt 加密密码
 
     // 更新 SQL 语句
     const updateQuery = `
       UPDATE users 
-      SET email = $1, nick_name = $2, type = $3, profile_image = $4, password = $5, updated_at = NOW() 
-      WHERE id = $6 
+      SET email = $1, nick_name = $2, type = $3, profile_image = $4, updated_at = NOW() 
+      WHERE id = $5 
       RETURNING *;
     `;
 
@@ -58,7 +60,7 @@ router.put("/cust/update-Custuser", async (req, res) => {
       updatedNickName,
       updatedType,
       updatedProfileImage,
-      hashedPassword,
+      //hashedPassword,
       idFromToken,
     ];
 
@@ -72,27 +74,5 @@ router.put("/cust/update-Custuser", async (req, res) => {
     res.status(500).json({ message: "服务器错误" });
   }
 });
-
-router.get("/getUser", async (req, res) => {
-  // api返回token里的user object
-  pool.query("SELECT * FROM users WHERE id = $1", [req.user.id], (err, result) => {
-    if (err) {
-      console.error("获取用户信息失败:", err);
-      return res.status(500).json({ message: "服务器错误" });
-    }
-
-    // 如果没有找到该用户，返回 404
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "用户不存在" });
-    }
-
-    const user = result.rows[0];
-
-    // 返回用户信息
-    res.json({ message: "获取用户信息成功", user });
-  }
-  );
-}
-);
 
 module.exports = router;

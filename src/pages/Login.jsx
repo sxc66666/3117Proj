@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from '../config/axiosInstance';
-import useAuthStore from '../components/useAuthStore';
+// import useAuthStore from '../components/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import FormInput from "../components/FormInput";
-import HCaptcha from '@hcaptcha/react-hcaptcha';
+// import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 // 密码强度指示器组件
 const PasswordStrengthIndicator = ({ password }) => {
@@ -81,37 +81,70 @@ export default function Auth() {
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
-  const { setUser } = useAuthStore();
+  // const { setUser } = useAuthStore();
   const navigate = useNavigate();
 
-  // On mount, check if user already logged in via localStorage or cookie
+  // On mount, check if user already logged in via /api/getUser (if not, the returned will be 401)
+
+  // Code below is deprecated, localStorage and cookies are deprecated, use jwt in httponly instead
+  // useEffect(() => {
+    // const storedUser = localStorage.getItem("user");
+    // const cookieUserId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*=\s*([^;]*).*$)|^.*$/, "$1");
+
+  //   if (storedUser || cookieUserId) {
+  //     try {
+  //       const user = storedUser ? JSON.parse(storedUser) : null;
+
+  //       if (!user?.type) {
+  //         navigate("/");
+  //         return;
+  //       }
+
+  //       // Redirect based on user type
+  //       if (user.type === "consumer") {
+  //         navigate("/cust/restaurants");
+  //       } else if (user.type === "restaurant") {
+  //         navigate("/vend/menu");
+  //       } else {
+  //         navigate("/");
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to parse user info:", error);
+  //       navigate("/");
+  //     }
+  //   }
+  // }, [navigate]);
+
+  // Use axiosInstance to check if user is logged in
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const cookieUserId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*=\s*([^;]*).*$)|^.*$/, "$1");
-
-    if (storedUser || cookieUserId) {
+    const checkUserLoggedIn = async () => {
       try {
-        const user = storedUser ? JSON.parse(storedUser) : null;
+        const response = await axiosInstance.get("/api/getUser", { withCredentials: true });
+        const userData = response.data.user;
 
-        if (!user?.type) {
+        if (!userData.type) {
           navigate("/");
           return;
         }
 
         // Redirect based on user type
-        if (user.type === "consumer") {
+        if (userData.type === "consumer") {
           navigate("/cust/restaurants");
-        } else if (user.type === "restaurant") {
+        } else if (userData.type === "restaurant") {
           navigate("/vend/menu");
         } else {
           navigate("/");
         }
       } catch (error) {
-        console.error("Failed to parse user info:", error);
-        navigate("/");
+        console.error("User not logged in:", error);
       }
-    }
-  }, [navigate]);
+    };
+
+    checkUserLoggedIn();
+  }
+  , [navigate]);
+
+
 
   // Switch between register and login mode, and reset all fields
   const toggleForm = () => {
@@ -185,9 +218,9 @@ export default function Auth() {
       // On login success, store user info and redirect
       if (!isRegister) {
         const userData = response.data.user;
-        setUser(userData);
-        document.cookie = `user_id=${userData.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
-        localStorage.setItem("user", JSON.stringify(userData));
+        // setUser(userData);
+        // document.cookie = `user_id=${userData.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
+        // localStorage.setItem("user", JSON.stringify(userData));
 
         if (!userData.profile_image) {
           navigate("/upload-avatar");

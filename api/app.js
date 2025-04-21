@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require('helmet');
 const cookieParser = require("cookie-parser");
 const path = require("path");
+const csrf = require('csurf');
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -22,6 +23,7 @@ const vendAccountRoutes = require("./routes/VendAccountBack");
 const restaurantRoutes = require("./routes/restaurantFood");
 const verifyCaptchaRouter = require("./routes/verifyCaptcha");
 const profileImageRouter = require("./routes/profileImage");
+const userRouter = require("./routes/user");
 
 // 导入中间件
 const authToken = require("./middleware/authToken");
@@ -43,7 +45,7 @@ const configureMiddleware = () => {
     origin: FRONTEND_URL,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token']
   }));
   
   // 解析请求体
@@ -91,6 +93,23 @@ const configureRoutes = () => {
   // 验证码相关路由
   app.use('/api', verifyCaptchaRouter);
 
+  // Use csrf middleware
+  const csrfProtection = csrf({ cookie: true });
+  app.use(csrfProtection);
+
+  app.get('/api/csrf-token', (req, res) => {
+    const token = req.csrfToken();
+  
+    // 双通道发给前端：cookie + JSON
+    res.cookie('XSRF-TOKEN', token, {
+      httpOnly: false,        // 允许前端读取
+      sameSite: 'Strict',     // 只允许同站请求
+      // secure: true,           // 生产环境建议启用 HTTPS
+    });
+  
+    res.json({ csrfToken: token });
+  });
+
   // 应用请求频率限制中间件
   app.use(limiter);
 
@@ -112,6 +131,7 @@ const configureRoutes = () => {
   // 账户相关路由
   app.use('/api', custAccountRoutes);
   app.use('/api', vendAccountRoutes);
+  app.use('/api', userRouter); // 账户相关路由
   
   // 订单相关路由
   app.use("/api/orders", orderRoutes);

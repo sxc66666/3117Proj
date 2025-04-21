@@ -13,12 +13,13 @@ export default function Orders() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user || !user.id) {
-          return;
-        }
+        // const user = JSON.parse(localStorage.getItem("user"));
+        // if (!user || !user.id) {
+        //   return;
+        // }
 
-        const response = await axiosInstance.get(`/api/orders/${user.id}`);
+        // const response = await axiosInstance.get(`/api/orders/${user.id}`);
+        const response = await axiosInstance.get(`/api/orders`);
 
         console.log("✅ [DEBUG] Fetched orders:", response.data);
         setOrders(response.data);

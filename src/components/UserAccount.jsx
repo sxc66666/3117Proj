@@ -10,7 +10,7 @@ if (!API_URL) {
 const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
   const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({ password: "" });
+  const [formData, setFormData] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
           fetchedUser.profile_image = `${API_URL}/uploads/${filename}`;
         }
 
-        const initialFormData = { ...fetchedUser, password: "" };
+        const initialFormData = { ...fetchedUser };
         fields.forEach(field => {
           if (!(field in initialFormData)) initialFormData[field] = "";
         });
@@ -48,7 +48,6 @@ const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
 
   const handleSave = async () => {
     const updatedUser = { ...user, ...formData };
-    if (!formData.password) delete updatedUser.password;
   
     try {
       const response = await axiosInstance.put(apiEndpoint, updatedUser);
@@ -92,18 +91,6 @@ const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-            </label>
-
-            <label className="block">
-              Password:
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter new password"
                 className="w-full p-2 border border-gray-300 rounded-md"
               />
             </label>
