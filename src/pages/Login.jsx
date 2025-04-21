@@ -76,7 +76,7 @@ export default function Auth() {
   const [nickName, setNickName] = useState("");
   const [email, setEmail] = useState("");
   const [type, setType] = useState("consumer");
-  const [profileImage, setProfileImage] = useState(null);
+  // const [profileImage, setProfileImage] = useState(null);
   const [message, setMessage] = useState("");
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
@@ -121,7 +121,7 @@ export default function Auth() {
     setConfirmPassword("");
     setNickName("");
     setEmail("");
-    setProfileImage(null);
+    //setProfileImage(null);
     setMessage("");
     setShowPasswordRequirements(false);
   };
@@ -137,10 +137,10 @@ export default function Auth() {
     }
 
     if (isRegister) {
-      if (!profileImage) {
-        setMessage("Profile image is required for registration.");
-        return;
-      }
+      // if (!profileImage) {
+      //   setMessage("Profile image is required for registration.");
+      //   return;
+      // }
       if (password !== confirmPassword) {
         setMessage("Passwords do not match.");
         return;
@@ -162,10 +162,10 @@ export default function Auth() {
         formData.append("nick_name", nickName);
         formData.append("email", email);
         formData.append("type", type);
-        formData.append("profile_image", profileImage);
+        // formData.append("profile_image", profileImage);
 
         response = await axiosInstance.post(url, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: { "Content-Type": "application/json" },
         });
       } else {
         // Login: send JSON body
@@ -189,13 +189,22 @@ export default function Auth() {
         document.cookie = `user_id=${userData.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
         localStorage.setItem("user", JSON.stringify(userData));
 
-        if (userData.type === "consumer") {
+        if (!userData.profile_image) {
+          navigate("/upload-avatar");
+        } else if (userData.type === "consumer") {
           navigate("/cust/restaurants");
         } else if (userData.type === "restaurant") {
           navigate("/vend/menu");
         } else {
           navigate("/");
         }
+        // if (userData.type === "consumer") {
+        //   navigate("/cust/restaurants");
+        // } else if (userData.type === "restaurant") {
+        //   navigate("/vend/menu");
+        // } else {
+        //   navigate("/");
+        // }
       } else {
         // After successful registration, switch to login mode
         toggleForm();
@@ -232,6 +241,7 @@ export default function Auth() {
                     <option value="restaurant">Restaurant</option>
                   </select>
                 </div>
+                {/* 
                 <div className="mt-2">
                   <label className="block text-sm font-medium text-gray-900">Profile Image</label>
                   <input
@@ -240,6 +250,7 @@ export default function Auth() {
                     className="w-full p-2 border border-gray-300 rounded-md"
                   />
                 </div>
+                 */}
               </>
             )}
             <div className="mt-2">

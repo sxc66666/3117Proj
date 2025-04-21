@@ -1,7 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs"); // 使用 bcryptjs 兼容 Windows
 const pool = require("../db/db");
-const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
@@ -28,18 +27,6 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true }); // { recursive: true } 确保可以创建多级目录
 }
 
-// 配置 multer 来处理文件上传
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir); // 使用 `uploads` 目录
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // 使用当前时间戳作为文件名
-  },
-});
-
-const upload = multer({ storage: storage });
-
 // 密码强度验证函数
 const validatePasswordStrength = (password) => {
   const minLength = 8;
@@ -64,9 +51,8 @@ const validatePasswordStrength = (password) => {
 };
 
 // ✅ 用户注册 API
-router.post("/register", upload.single("profile_image"), validate(registerSchema), async (req, res) => {
+router.post("/register", validate(registerSchema) ,async (req, res) => {
   const { login_id, password, nick_name, email, type } = req.body;
-  const profile_image = req.file ? req.file.path : null;
 
   try {
     // 验证密码强度
@@ -89,14 +75,14 @@ router.post("/register", upload.single("profile_image"), validate(registerSchema
 
     // 插入新用户
     const result = await pool.query(
-      "INSERT INTO users (login_id, password, nick_name, email, type, profile_image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-      [login_id, hashedPassword, nick_name, email, type, profile_image]
+      "INSERT INTO users (login_id, password, nick_name, email, type) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [login_id, hashedPassword, nick_name, email, type]
     );
 
     if (type === "restaurant") {
       await pool.query(
-        "INSERT INTO restaurants (name, image, id) VALUES ($1, $2, (SELECT id FROM users WHERE login_id = $3))",
-        [nick_name, profile_image, login_id]
+        "INSERT INTO restaurants (name, image, id) VALUES ($1, null, (SELECT id FROM users WHERE login_id = $2))",
+        [nick_name, login_id] // 需要处理新建用户如果是商家类型，但是自己上传头像没加进来image为null的时候从users表读取
       );
     }
 
@@ -123,7 +109,7 @@ router.post("/login", validate(loginSchema), async (req, res) => {
     console.log("Database query result:", result.rows);
 
     if (result.rows.length === 0) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const user = result.rows[0];
@@ -134,7 +120,7 @@ router.post("/login", validate(loginSchema), async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       console.log("❌ Password is invalid");
-      return res.status(400).json({ message: "Invalid password" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     console.log("✅ Login successful for user:", user.login_id);

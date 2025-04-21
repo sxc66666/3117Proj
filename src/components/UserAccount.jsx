@@ -1,5 +1,3 @@
-// 图片逻辑还需debug
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../config/axiosInstance";
@@ -129,23 +127,29 @@ const UserAccount = ({ userType = "cust", apiEndpoint, fields = [] }) => {
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-gray-700">Login ID: {user.login_id}</p>
-            <p className="text-gray-700">Nick Name: {user.nick_name}</p>
-            <p className="text-gray-700">Email: {user.email}</p>
-            <p className="text-gray-700">Type: {user.type}</p>
-            <img
-              src={user.profile_image || "/default-avatar.png"}
-              alt="Profile"
-              onError={(e) => { e.target.src = "/default-avatar.png"; }}
-              className="w-36 h-36 rounded-full mx-auto"
-            />
-            {fields.includes("description") && (
-              <p className="text-gray-600 whitespace-pre-line">{user.description}</p>
-            )}
+          <p className="text-gray-700">Login ID: {user.login_id}</p>
+          <p className="text-gray-700">Nick Name: {user.nick_name}</p>
+          <p className="text-gray-700">Email: {user.email}</p>
+          <p className="text-gray-700">Type: {user.type}</p>
+          <img
+            src={user.profile_image || "/default-avatar.png"}
+            alt="Profile"
+            onError={(e) => { e.target.src = "/default-avatar.png"; }}
+            className="w-36 h-36 rounded-full mx-auto"
+          />
+          {fields.includes("description") && (
+            <p className="text-gray-600 whitespace-pre-line">{user.description}</p>
+          )}
+
+          <div className="flex space-x-4">
             <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-yellow-500 text-white rounded-md">
               Edit
             </button>
+            <button onClick={() => navigate("/upload-avatar")} className="px-4 py-2 bg-indigo-600 text-white rounded-md">
+              Change Avatar
+            </button>
           </div>
+        </div>
         )}
       </div>
     </div>
