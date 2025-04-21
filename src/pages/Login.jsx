@@ -76,7 +76,7 @@ export default function Auth() {
   const [nickName, setNickName] = useState("");
   const [email, setEmail] = useState("");
   const [type, setType] = useState("consumer");
-  // const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const [message, setMessage] = useState("");
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
