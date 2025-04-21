@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import FormInput from "../components/FormInput";
 // import HCaptcha from '@hcaptcha/react-hcaptcha';
 
-// 密码强度指示器组件
+// Password Strength Indicator Component
 const PasswordStrengthIndicator = ({ password }) => {
   const getStrength = (password) => {
     let strength = 0;
@@ -18,7 +18,7 @@ const PasswordStrengthIndicator = ({ password }) => {
   };
 
   const strength = getStrength(password);
-  const strengthText = ["非常弱", "弱", "中等", "强", "非常强"][strength - 1] || "未输入";
+  const strengthText = ["Very Weak", "Weak", "Medium", "Strong", "Very Strong"][strength - 1] || "Not Entered";
   const strengthColor = [
     "bg-red-500",
     "bg-orange-500",
@@ -27,13 +27,13 @@ const PasswordStrengthIndicator = ({ password }) => {
     "bg-green-500"
   ][strength - 1] || "bg-gray-200";
 
-  // 检查各项要求
+  // Check requirements
   const requirements = [
-    { text: "至少8个字符", met: password.length >= 8 },
-    { text: "包含大写字母", met: /[A-Z]/.test(password) },
-    { text: "包含小写字母", met: /[a-z]/.test(password) },
-    { text: "包含数字", met: /\d/.test(password) },
-    { text: "包含特殊字符", met: /[!@#$%^&*(),.?":{}|<>]/.test(password) }
+    { text: "At least 8 characters", met: password.length >= 8 },
+    { text: "Contains uppercase letter", met: /[A-Z]/.test(password) },
+    { text: "Contains lowercase letter", met: /[a-z]/.test(password) },
+    { text: "Contains number", met: /\d/.test(password) },
+    { text: "Contains special character", met: /[!@#$%^&*(),.?":{}|<>]/.test(password) }
   ];
 
   return (
@@ -49,7 +49,7 @@ const PasswordStrengthIndicator = ({ password }) => {
         ))}
       </div>
       <p className="text-xs text-gray-500 mt-1">
-        密码强度: {strengthText}
+        Password Strength: {strengthText}
       </p>
       <div className="mt-2 space-y-1">
         {requirements.map((req, index) => (
@@ -68,7 +68,6 @@ const PasswordStrengthIndicator = ({ password }) => {
 };
 
 export default function Auth() {
-  // Auth form state
   const [isRegister, setIsRegister] = useState(false);
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
@@ -84,38 +83,6 @@ export default function Auth() {
   // const { setUser } = useAuthStore();
   const navigate = useNavigate();
 
-  // On mount, check if user already logged in via /api/getUser (if not, the returned will be 401)
-
-  // Code below is deprecated, localStorage and cookies are deprecated, use jwt in httponly instead
-  // useEffect(() => {
-    // const storedUser = localStorage.getItem("user");
-    // const cookieUserId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*=\s*([^;]*).*$)|^.*$/, "$1");
-
-  //   if (storedUser || cookieUserId) {
-  //     try {
-  //       const user = storedUser ? JSON.parse(storedUser) : null;
-
-  //       if (!user?.type) {
-  //         navigate("/");
-  //         return;
-  //       }
-
-  //       // Redirect based on user type
-  //       if (user.type === "consumer") {
-  //         navigate("/cust/restaurants");
-  //       } else if (user.type === "restaurant") {
-  //         navigate("/vend/menu");
-  //       } else {
-  //         navigate("/");
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to parse user info:", error);
-  //       navigate("/");
-  //     }
-  //   }
-  // }, [navigate]);
-
-  // Use axiosInstance to check if user is logged in
   useEffect(() => {
     const checkUserLoggedIn = async () => {
       try {
@@ -127,7 +94,6 @@ export default function Auth() {
           return;
         }
 
-        // Redirect based on user type
         if (userData.type === "consumer") {
           navigate("/cust/restaurants");
         } else if (userData.type === "restaurant") {
@@ -141,12 +107,8 @@ export default function Auth() {
     };
 
     checkUserLoggedIn();
-  }
-  , [navigate]);
+  }, [navigate]);
 
-
-
-  // Switch between register and login mode, and reset all fields
   const toggleForm = () => {
     setIsRegister(prev => !prev);
     setLoginId("");
@@ -159,11 +121,9 @@ export default function Auth() {
     setShowPasswordRequirements(false);
   };
 
-  // Handle form submission for login or register
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (!loginId || !password) {
       setMessage("Login ID and Password are required.");
       return;
@@ -188,7 +148,6 @@ export default function Auth() {
       let response;
 
       if (isRegister) {
-        // Register: use FormData for file upload
         const formData = new FormData();
         formData.append("login_id", loginId);
         formData.append("password", password);
@@ -202,7 +161,6 @@ export default function Auth() {
           headers: { "Content-Type": "application/json" },
         });
       } else {
-        // Login: send JSON body
         const data = {
           login_id: loginId,
           password,
@@ -216,12 +174,9 @@ export default function Auth() {
 
       setMessage(response.data.message);
 
-      // On login success, store user info and redirect
       if (!isRegister) {
         const userData = response.data.user;
         // setUser(userData);
-        // document.cookie = `user_id=${userData.id}; path=/; max-age=${60 * 60 * 24 * 30}`;
-        // localStorage.setItem("user", JSON.stringify(userData));
 
         if (!userData.profile_image) {
           navigate("/upload-avatar");
@@ -232,15 +187,7 @@ export default function Auth() {
         } else {
           navigate("/");
         }
-        // if (userData.type === "consumer") {
-        //   navigate("/cust/restaurants");
-        // } else if (userData.type === "restaurant") {
-        //   navigate("/vend/menu");
-        // } else {
-        //   navigate("/");
-        // }
       } else {
-        // After successful registration, switch to login mode
         toggleForm();
       }
     } catch (error) {
@@ -275,16 +222,6 @@ export default function Auth() {
                     <option value="restaurant">Restaurant</option>
                   </select>
                 </div>
-                {/* 
-                <div className="mt-2">
-                  <label className="block text-sm font-medium text-gray-900">Profile Image</label>
-                  <input
-                    type="file"
-                    onChange={(e) => setProfileImage(e.target.files[0])}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                 */}
               </>
             )}
             <div className="mt-2">
@@ -339,7 +276,7 @@ export default function Auth() {
           </button>
         </div>
 
-        {/* 密码强度指示器 */}
+        {/* Password Strength Indicator */}
         {isRegister && isPasswordFocused && (
           <div className="absolute left-[420px] w-64 bg-white p-4 rounded-lg shadow-md h-fit">
             <PasswordStrengthIndicator password={password} />
