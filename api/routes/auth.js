@@ -148,11 +148,13 @@ router.post("/login", validate(loginSchema), async (req, res) => {
     // 使用 httpOnly cookie 设置 token
     res.cookie('auth_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // 生产环境使用 HTTPS ！！！！以后必须修改这个
+      secure: false, // 生产环境使用 HTTPS ！！！！以后必须修改这个
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000, // 24小时
       domain: process.env.DOMAIN // 设置 cookie 的域名 !!!!!!! 以后必须修改这个
     });
+    console.log("Register request body:", req.body);
+    console.log("Register request file:", req.file);
     console.log('Token set:', token);
 
 

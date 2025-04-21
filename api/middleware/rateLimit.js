@@ -21,6 +21,8 @@ const limiter = rateLimit({
 const captchaRequired = {};
 
 const rateLimitMiddleware = async (req, res, next) => {
+  console.log("🔍 Rate limit check for:", req.path);
+
   // 如果 IP 请求数未超过阈值，则直接放行
   if (req.rateLimit.remaining > 0) {
     return next();

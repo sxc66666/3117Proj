@@ -1,6 +1,17 @@
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
+  console.log(`🔍 authMiddleware Original URL: ${req.originalUrl}, Current path: ${req.path}`);
+  // // 跳过特定的路由
+  // const publicRoutes = [/^\/auth\/register$/, /^\/auth\/login$/, /^\/api\/auth\/register$/, /^\/api\/auth\/login$/];
+  // const isPublicRoute = publicRoutes.some(route => route.test(req.path)); // 使用正则表达式匹配公共路由
+  // console.log(`🔍 Current path: ${req.path}, Is public route: ${isPublicRoute}`);
+  
+  // if (isPublicRoute) {
+  //   console.log(`🔓 Public route accessed: ${req.path}`);
+  //   return next(); // 跳过验证
+  // }
+
   // 从 cookie 中获取 token
   const token = req.cookies.auth_token;
 

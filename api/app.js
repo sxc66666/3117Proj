@@ -35,6 +35,9 @@ const app = express();
 
 // 配置中间件
 const configureMiddleware = () => {
+  // 信任特定的代理（如 Nginx 的本地代理）
+  app.set('trust proxy', 'loopback'); // 仅信任本地代理（如 127.0.0.1 和 ::1）
+
   // 启用cookie解析
   app.use(cookieParser());
   
@@ -97,8 +100,11 @@ const configureRoutes = () => {
   // 应用自定义的 rateLimitMiddleware
   app.use(rateLimitMiddleware);
 
-  // 认证相关路由
+  console.log("🔧 Configuring routes...");
+  // 用户注册和登录相关路由
+  // 这些路由不需要身份验证
   app.use('/api/auth', authRouter);
+  console.log("✅ /api/auth route mounted");
 
   // 认证中间件
   app.use(authToken); // pages below this middleware must be authenticated
@@ -127,7 +133,14 @@ const configureRoutes = () => {
 const configureErrorHandling = () => {
   // 处理404错误
   app.use((req, res) => {
+    console.error("❌ 404 Not Found:", req.originalUrl);
+    console.log(`🔍 Original URL: ${req.originalUrl}, Current path: ${req.path}`);
     res.status(404).json({ error: "Not Found" });
+  });
+
+  app.use((req, res, next) => {
+    console.log("🔍 Request passed through middleware:", req.path);
+    next();
   });
   
   // 统一错误处理
