@@ -66,7 +66,7 @@ router.post("/", validate(orderSchema), authorize(['consumer']), async (req, res
     }
 });
 
-router.get("/:user_id", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const idFromToken = req.user.id;
 

@@ -36,14 +36,14 @@ export default function CustCheckout() {
     // ✅ 处理订单提交
     const handleCheckout = async () => {
         try {
-            const user = JSON.parse(localStorage.getItem("user"));
-            if (!user || !user.id) {
-                alert("User not logged in");
-                return;
-            }
+            // const user = JSON.parse(localStorage.getItem("user"));
+            // if (!user || !user.id) {
+            //     alert("User not logged in");
+            //     return;
+            // }
 
-            // Log user_id to verify it is correctly retrieved
-            console.log('User ID:', user.id);
+            // // Log user_id to verify it is correctly retrieved
+            // console.log('User ID:', user.id);
 
             // Log restaurantId to verify it is correctly passed
             console.log('Restaurant ID:', restaurantId);
