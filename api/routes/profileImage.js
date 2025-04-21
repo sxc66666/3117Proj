@@ -5,6 +5,7 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { fromFile } = require('file-type');
 const pool = require("../db/db");
+const { console } = require('inspector');
 
 const router = express.Router();
 
@@ -51,7 +52,8 @@ router.post('/upload', upload.single('profile_image'), async (req, res) => {
 
   try {
     const filename = path.basename(filePath);
-    const url = `http://${DOMAIN}:${PORT}/api/uploads/${filename}`;
+    console.log('Uploaded file:', filename);
+    const url = `https://${DOMAIN}:${PORT}/api/uploads/${filename}`;
 
     const result = await pool.query(
       'UPDATE users SET profile_image = $1 WHERE id = $2 RETURNING type',
