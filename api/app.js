@@ -56,7 +56,7 @@ const configureMiddleware = () => {
   // 静态文件服务
   const uploadsPath = path.join(__dirname, 'uploads');
   console.log(`📂 Serving static files from: ${uploadsPath}`);
-  app.use('/uploads', express.static(uploadsPath));
+  app.use('/api/uploads', express.static(uploadsPath));
 
   // 使用helmet保护应用 默认配置
   app.use(helmet());
