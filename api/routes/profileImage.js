@@ -42,14 +42,30 @@ router.post('/upload', upload.single('profile_image'), async (req, res) => {
   const userId = req.user.id;
   if (!userId) return res.status(400).json({ error: 'User ID is required' });
 
-  const filePath = req.file.path.replace(/\\/g, '/'); // Normalize path
-  const fileType = await fromFile(req.file.path);
-  if (!fileType || !['image/jpeg', 'image/png', 'image/webp'].includes(fileType.mime)) {
-    fs.unlinkSync(filePath);
-    return res.status(400).json({ error: 'Invalid file type' });
-  }
-
   try {
+    // 检查数据库中是否已有头像 URL
+    const existingImageResult = await pool.query('SELECT profile_image FROM users WHERE id = $1', [userId]);
+    if (existingImageResult.rowCount > 0) {
+      const existingImageUrl = existingImageResult.rows[0].profile_image;
+
+      if (existingImageUrl) {
+        const existingFilename = path.basename(existingImageUrl);
+        const existingFilePath = path.join(UPLOAD_DIR, existingFilename);
+
+        // 尝试删除旧文件
+        if (fs.existsSync(existingFilePath)) {
+          fs.unlinkSync(existingFilePath);
+        }
+      }
+    }
+
+    const filePath = req.file.path.replace(/\\/g, '/'); // Normalize path
+    const fileType = await fromFile(req.file.path);
+    if (!fileType || !['image/jpeg', 'image/png', 'image/webp'].includes(fileType.mime)) {
+      fs.unlinkSync(filePath);
+      return res.status(400).json({ error: 'Invalid file type' });
+    }
+
     const filename = path.basename(filePath);
     const url = `http://${DOMAIN}:${PORT}/uploads/${filename}`;
 
@@ -60,7 +76,7 @@ router.post('/upload', upload.single('profile_image'), async (req, res) => {
 
     if (result.rowCount === 0) return res.status(404).json({ error: 'User not found' });
 
-    // if type is restaurant, update restaurants table's image of that restaurant (where id = userId)
+    // 如果用户类型是餐厅，更新餐厅表中的图片
     if (result.rows[0].type === 'restaurant') {
       await pool.query(
         'UPDATE restaurants SET image = $1 WHERE id = $2',

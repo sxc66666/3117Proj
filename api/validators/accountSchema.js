@@ -4,11 +4,13 @@ const { body } = require('express-validator');
 const updateCustUserSchema = [
     body('email')
       .optional()
-      .isString().withMessage('email 必须为字符串'),
+      .isString().withMessage('email 必须为字符串')
+      .trim().escape(),
   
     body('nick_name')
       .optional()
-      .isString().withMessage('昵称必须为字符串'),
+      .isString().withMessage('昵称必须为字符串')
+      .trim().escape(),
   
     body('type')
       .optional()
@@ -16,17 +18,20 @@ const updateCustUserSchema = [
   
     body('profile_image')
       .optional()
-      .isString().withMessage('profile_image 必须为字符串'),
+      .isString().withMessage('profile_image 必须为字符串')
+      .trim().escape(),
   ];
 
   const updateVendUserSchema = [
     body('email')
       .optional()
-      .isString().withMessage('email 必须为字符串'),
+      .isString().withMessage('email 必须为字符串')
+      .trim().escape(),
   
     body('nick_name')
       .optional()
-      .isString().withMessage('昵称必须为字符串'),
+      .isString().withMessage('昵称必须为字符串')
+      .trim().escape(),
   
     body('type')
       .optional()
@@ -34,11 +39,13 @@ const updateCustUserSchema = [
   
     body('profile_image')
       .optional()
-      .isString().withMessage('profile_image 必须为字符串'),
+      .isString().withMessage('profile_image 必须为字符串')
+      .trim().escape(),
   
     body('description')
       .optional()
-      .isString().withMessage('description 必须为字符串'),
+      .isString().withMessage('description 必须为字符串')
+      .trim().escape(),
   ];
 
 module.exports = {
