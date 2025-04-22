@@ -8,7 +8,7 @@ dotenv.config();
 // hCaptcha secret key
 const HCAPTCHA_SECRET = process.env.HCAPTCHA_SECRET; 
 
-const MAX_REQUESTS = 20; // 每1分钟最大请求数
+const MAX_REQUESTS = 100; // 每1分钟最大请求数
 
 // 配置请求频率限制
 const limiter = rateLimit({
