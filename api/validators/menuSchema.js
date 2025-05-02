@@ -18,8 +18,7 @@ const addMenuItemSchema = [
 
   body('image')
     .optional()
-    .isString().withMessage('图片路径必须是字符串')
-    .trim().escape(),
+    .isURL().withMessage('Image path must be a valid URL')
 ];
 
 // 更新菜品验证规则（body 中包含 id 字段）
@@ -42,8 +41,7 @@ const updateMenuItemSchema = [
 
   body('image')
     .optional()
-    .isString().withMessage('图片路径必须是字符串')
-    .trim().escape(),
+    .isURL().withMessage('Image path must be a valid URL')
 ];
 
 // 删除菜品验证规则（URL 参数中的 id）
